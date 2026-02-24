@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sorted — Your finances, finally sorted.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --dark: #1e2a1f;
+    --lime: #c8e454;
+    --cream: #f5f0e8;
+    --muted: #6b7c6d;
+    --card-bg: #ffffff;
+    --border: #ddd8cc;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--dark);
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 48px;
+    background: var(--cream);
+    border-bottom: 1px solid transparent;
+    transition: border-color .3s, backdrop-filter .3s;
+  }
+  nav.scrolled {
+    border-color: var(--border);
+    backdrop-filter: blur(12px);
+    background: rgba(245,240,232,.88);
+  }
+  .nav-logo {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px; font-weight: 400;
+    color: var(--dark); letter-spacing: -.01em;
+  }
+  .nav-logo span { color: var(--dark); font-style: italic; }
+  .nav-cta {
+    background: var(--dark); color: var(--lime);
+    border: none; border-radius: 100px;
+    padding: 10px 24px; font-size: 13px; font-weight: 600;
+    font-family: 'DM Sans', sans-serif; cursor: pointer;
+    transition: all .2s; letter-spacing: .01em;
+  }
+  .nav-cta:hover { background: #2e4030; transform: translateY(-1px); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    position: relative;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 28px;
+    border: 1px solid var(--border); border-radius: 100px; padding: 6px 16px;
+    animation: fadeUp .6s ease both;
+  }
+  .eyebrow-dot { width: 6px; height: 6px; background: var(--lime); border-radius: 50%; }
+
+  .hero-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(52px, 9vw, 96px);
+    font-weight: 400; line-height: 1.05;
+    letter-spacing: -.03em; color: var(--dark);
+    max-width: 900px; margin-bottom: 24px;
+    animation: fadeUp .7s .1s ease both;
+  }
+  .hero-title em { font-style: italic; color: #3a5a3c; }
+
+  .hero-sub {
+    font-size: clamp(16px, 2vw, 19px);
+    color: var(--muted); line-height: 1.65;
+    max-width: 520px; margin-bottom: 44px;
+    font-weight: 400;
+    animation: fadeUp .7s .2s ease both;
+  }
+
+  .hero-actions {
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+    animation: fadeUp .7s .3s ease both;
+  }
+
+  .wishlist-form {
+    display: flex; gap: 10px; align-items: center;
+    background: white; border: 1.5px solid var(--border);
+    border-radius: 100px; padding: 6px 6px 6px 20px;
+    box-shadow: 0 4px 24px rgba(0,0,0,.08);
+  }
+  .wishlist-form input {
+    border: none; outline: none; background: transparent;
+    font-family: 'DM Sans', sans-serif; font-size: 14px;
+    color: var(--dark); width: 220px;
+  }
+  .wishlist-form input::placeholder { color: #aaa; }
+  .wishlist-btn {
+    background: var(--dark); color: var(--lime);
+    border: none; border-radius: 100px;
+    padding: 12px 24px; font-size: 13px; font-weight: 600;
+    font-family: 'DM Sans', sans-serif; cursor: pointer;
+    transition: all .2s; white-space: nowrap;
+  }
+  .wishlist-btn:hover { background: #2e4030; }
+
+  .hero-note {
+    font-size: 12px; color: var(--muted);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .hero-count {
+    background: var(--lime); color: var(--dark);
+    font-weight: 700; border-radius: 100px; padding: 2px 10px; font-size: 11px;
+  }
+
+  /* ── TICKER ── */
+  .ticker-wrap {
+    overflow: hidden;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 0;
+    background: var(--dark);
+  }
+  .ticker-track {
+    display: flex; gap: 0;
+    animation: ticker 30s linear infinite;
+    width: max-content;
+  }
+  .ticker-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 0 32px; white-space: nowrap;
+    font-size: 13px; font-weight: 500; color: var(--lime);
+    letter-spacing: .04em;
+  }
+  .ticker-sep { color: #3a5a3c; font-size: 18px; }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ── PROBLEM SECTION ── */
+  .section { padding: 100px 48px; max-width: 1200px; margin: 0 auto; }
+
+  .section-label {
+    font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 20px;
+  }
+
+  .problem-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(36px, 5vw, 58px);
+    font-weight: 400; line-height: 1.15; letter-spacing: -.02em;
+    max-width: 700px; margin-bottom: 60px;
+  }
+  .problem-title em { font-style: italic; color: #b85c2a; }
+
+  .problems-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .problem-card {
+    background: white; border: 1px solid var(--border); border-radius: 20px;
+    padding: 28px; position: relative; overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .problem-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,.08); }
+  .problem-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--lime);
+  }
+  .problem-emoji { font-size: 28px; margin-bottom: 14px; display: block; }
+  .problem-headline { font-size: 17px; font-weight: 600; color: var(--dark); margin-bottom: 8px; line-height: 1.3; }
+  .problem-body { font-size: 13.5px; color: var(--muted); line-height: 1.65; }
+
+  /* ── SCROLLING CARDS ── */
+  .scroll-section {
+    padding: 80px 0;
+    background: var(--dark);
+    overflow: hidden;
+  }
+  .scroll-section-header {
+    padding: 0 48px 48px;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .scroll-section-header .section-label { color: #6b9c6e; }
+  .scroll-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(36px, 5vw, 58px);
+    font-weight: 400; line-height: 1.15; letter-spacing: -.02em;
+    color: var(--cream);
+  }
+  .scroll-title em { font-style: italic; color: var(--lime); }
+
+  .cards-outer { position: relative; }
+  .cards-row {
+    display: flex; gap: 14px;
+    animation: scrollLeft 35s linear infinite;
+    width: max-content; padding: 8px 48px;
+  }
+  .cards-row.reverse { animation: scrollRight 40s linear infinite; }
+  @keyframes scrollLeft { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @keyframes scrollRight { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+
+  .query-card {
+    background: #2c3a2e; border: 1px solid #3a5040;
+    border-radius: 16px; padding: 18px 22px;
+    white-space: nowrap; cursor: default;
+    transition: background .2s;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .query-card:hover { background: #354438; }
+  .query-card-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: #1e2a1f; display: flex; align-items: center;
+    justify-content: center; font-size: 18px; flex-shrink: 0;
+  }
+  .query-card-text { }
+  .query-card-title { font-size: 14px; font-weight: 600; color: var(--cream); }
+  .query-card-sub { font-size: 11.5px; color: #6b9c6e; margin-top: 2px; }
+
+  /* ── HOW IT WORKS ── */
+  .how-section {
+    padding: 100px 48px;
+    background: var(--cream);
+  }
+  .how-inner { max-width: 1200px; margin: 0 auto; }
+  .how-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(36px, 5vw, 58px);
+    font-weight: 400; line-height: 1.15; letter-spacing: -.02em;
+    max-width: 600px; margin-bottom: 64px;
+  }
+  .how-title em { font-style: italic; }
+
+  .steps-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 2px; border: 1px solid var(--border); border-radius: 24px; overflow: hidden;
+  }
+  .step {
+    padding: 40px 36px; background: white;
+    position: relative;
+  }
+  .step:not(:last-child)::after {
+    content: ''; position: absolute; right: 0; top: 20%; bottom: 20%;
+    width: 1px; background: var(--border);
+  }
+  .step-num {
+    font-family: 'Instrument Serif', serif;
+    font-size: 52px; color: var(--lime); line-height: 1;
+    margin-bottom: 20px; display: block;
+  }
+  .step-title { font-size: 18px; font-weight: 600; color: var(--dark); margin-bottom: 10px; }
+  .step-body { font-size: 14px; color: var(--muted); line-height: 1.7; }
+  .step-tag {
+    display: inline-block; margin-top: 16px;
+    background: #f0f7e0; color: #3a5a3c;
+    font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+    border-radius: 100px; padding: 4px 12px;
+  }
+
+  /* ── ANTI-PITCH ── */
+  .anti-section {
+    padding: 100px 48px;
+    background: var(--dark);
+  }
+  .anti-inner { max-width: 1200px; margin: 0 auto; }
+  .anti-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(36px, 5vw, 58px);
+    font-weight: 400; color: var(--cream); line-height: 1.15;
+    letter-spacing: -.02em; margin-bottom: 56px;
+  }
+  .anti-title em { font-style: italic; color: var(--lime); }
+
+  .anti-rows { display: flex; flex-direction: column; gap: 0; }
+  .anti-row {
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    align-items: center; gap: 24px;
+    padding: 24px 0; border-bottom: 1px solid #2e4030;
+  }
+  .anti-row:first-child { border-top: 1px solid #2e4030; }
+  .anti-them {
+    font-size: 15px; color: #6b9c6e; text-decoration: line-through;
+    text-decoration-color: #3a5a3c;
+  }
+  .anti-arrow { color: var(--lime); font-size: 20px; text-align: center; }
+  .anti-us { font-size: 15px; color: var(--cream); font-weight: 500; }
+
+  /* ── SOCIAL PROOF ── */
+  .proof-section {
+    padding: 100px 48px; background: var(--cream);
+  }
+  .proof-inner { max-width: 1200px; margin: 0 auto; }
+  .proof-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 400; margin-bottom: 48px; letter-spacing: -.02em;
+  }
+  .proof-title em { font-style: italic; }
+  .quotes-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+  .quote-card {
+    background: white; border: 1px solid var(--border); border-radius: 20px; padding: 28px;
+    transition: transform .2s;
+  }
+  .quote-card:hover { transform: translateY(-3px); }
+  .quote-stars { color: #f59e0b; font-size: 14px; margin-bottom: 14px; letter-spacing: 2px; }
+  .quote-text { font-size: 15px; line-height: 1.7; color: var(--dark); margin-bottom: 20px; font-style: italic; }
+  .quote-person { display: flex; align-items: center; gap: 10px; }
+  .quote-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--dark); display: flex; align-items: center;
+    justify-content: center; font-size: 16px; color: var(--lime); font-weight: 700;
+  }
+  .quote-name { font-size: 13px; font-weight: 600; color: var(--dark); }
+  .quote-role { font-size: 12px; color: var(--muted); }
+
+  /* ── FINAL CTA ── */
+  .final-cta {
+    background: var(--dark); padding: 120px 48px;
+    text-align: center;
+  }
+  .final-cta-inner { max-width: 700px; margin: 0 auto; }
+  .final-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(42px, 7vw, 80px);
+    font-weight: 400; color: var(--cream); line-height: 1.1;
+    letter-spacing: -.03em; margin-bottom: 20px;
+  }
+  .final-title em { font-style: italic; color: var(--lime); }
+  .final-sub { font-size: 17px; color: #6b9c6e; margin-bottom: 44px; line-height: 1.6; }
+  .final-form {
+    display: flex; gap: 10px; align-items: center; justify-content: center;
+    background: #2c3a2e; border: 1.5px solid #3a5040;
+    border-radius: 100px; padding: 6px 6px 6px 24px;
+    max-width: 440px; margin: 0 auto 16px;
+  }
+  .final-form input {
+    flex: 1; border: none; outline: none; background: transparent;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--cream);
+  }
+  .final-form input::placeholder { color: #4a6b4c; }
+  .final-btn {
+    background: var(--lime); color: var(--dark);
+    border: none; border-radius: 100px;
+    padding: 12px 24px; font-size: 13px; font-weight: 700;
+    font-family: 'DM Sans', sans-serif; cursor: pointer;
+    transition: all .2s; white-space: nowrap;
+  }
+  .final-btn:hover { background: #d4f060; }
+  .final-note { font-size: 12px; color: #4a6b4c; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: #111a12; padding: 32px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid #1e2a1f;
+  }
+  .footer-logo {
+    font-family: 'Instrument Serif', serif;
+    font-size: 18px; color: var(--cream); font-style: italic;
+  }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a {
+    font-size: 12px; color: #4a6b4c; text-decoration: none;
+    transition: color .15s;
+  }
+  .footer-links a:hover { color: var(--lime); }
+  .footer-right { font-size: 12px; color: #2e4030; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0; transform: translateY(28px);
+    transition: opacity .8s ease, transform .8s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 16px 20px; }
+    .section { padding: 64px 20px; }
+    .how-section, .anti-section, .proof-section { padding: 64px 20px; }
+    .steps-grid { grid-template-columns: 1fr; gap: 16px; border: none; }
+    .step { border: 1px solid var(--border); border-radius: 20px; }
+    .step::after { display: none; }
+    .quotes-grid { grid-template-columns: 1fr; }
+    .anti-row { grid-template-columns: 1fr; gap: 8px; }
+    .anti-arrow { display: none; }
+    footer { flex-direction: column; gap: 16px; text-align: center; }
+    .wishlist-form { flex-direction: column; border-radius: 16px; padding: 16px; }
+    .wishlist-form input { width: 100%; }
+    .final-form { flex-direction: column; border-radius: 16px; padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo">Sorted<span>.</span></div>
+  <button class="nav-cta" onclick="document.getElementById('wishlist').scrollIntoView({behavior:'smooth'})">Join Wishlist</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">
+    <span class="eyebrow-dot"></span>
+    India's first financial concierge
+  </div>
+  <h1 class="hero-title">
+    Make smarter<br /><em>decisions, faster.</em>
+  </h1>
+  <p class="hero-sub">
+    Sorted helps you become the best financial version of yourself &mdash; with expert guidance, AI, and end-to-end support for every money decision you face.
+  </p>
+  <div class="hero-actions" id="wishlist">
+    <div class="wishlist-form">
+      <input type="email" placeholder="your@email.com" id="hero-email" />
+      <button class="wishlist-btn" onclick="handleWishlist('hero-email')">Join the Wishlist →</button>
+    </div>
+    <div class="hero-note">
+      <span class="hero-count">1,200+</span> people already waiting
+    </div>
+  </div>
+</section>
+
+
+
+
+
+<!-- SCROLLING QUERY CARDS -->
+<section class="scroll-section">
+  <div class="scroll-section-header">
+    <div class="section-label">What people ask us</div>
+    <h2 class="scroll-title">Got a money problem?<br /><em>We've got you.</em></h2>
+  </div>
+
+  <div class="cards-outer">
+    <div class="cards-row">
+      <!-- Row 1 -->
+      <div class="query-card"><div class="query-card-icon">🏠</div><div class="query-card-text"><div class="query-card-title">Home loan at best rate</div><div class="query-card-sub">Loans</div></div></div>
+      <div class="query-card"><div class="query-card-icon">🧾</div><div class="query-card-text"><div class="query-card-title">Save tax before March 31</div><div class="query-card-sub">Tax</div></div></div>
+      <div class="query-card"><div class="query-card-icon">🛡️</div><div class="query-card-text"><div class="query-card-title">Family health cover for 4</div><div class="query-card-sub">Insurance</div></div></div>
+      <div class="query-card"><div class="query-card-icon">📈</div><div class="query-card-text"><div class="query-card-title">Best SIP for ₹10k/month</div><div class="query-card-sub">Investments</div></div></div>
+      <div class="query-card"><div class="query-card-icon">💳</div><div class="query-card-text"><div class="query-card-title">Improve credit score fast</div><div class="query-card-sub">Credit</div></div></div>
+      <div class="query-card"><div class="query-card-icon">🚗</div><div class="query-card-text"><div class="query-card-title">Car loan or buy outright?</div><div class="query-card-sub">Loans</div></div></div>
+      <div class="query-card"><div class="query-card-icon">👶</div><div class="query-card-text"><div class="query-card-title">Invest for child's education</div><div class="query-card-sub">Planning</div></div></div>
+      <div class="query-card"><div class="query-card-icon">🏖️</div><div class="query-card-text"><div class="query-card-title">Retire at 45 — is it possible?</div><div class="query-card-sub">Retirement</div></div></div>
+      <!-- duplicate -->
+      <div class="query-card"><div class="query-card-icon">🏠</div><div class="query-card-text"><div class="query-card-title">Home loan at best rate</div><div class="query-card-sub">Loans</div></div></div>
+      <div class="query-card"><div class="query-card-icon">🧾</div><div class="query-card-text"><div class="query-card-title">Save tax before March 31</div><div class="query-card-sub">Tax</div></div></div>
+      <div class="query-card"><div class="query-card-icon">🛡️</div><div class="query-card-text"><div class="query-card-title">Family health cover for 4</div><div class="query-card-sub">Insurance</div></div></div>
+      <div class="query-card"><div class="query-card-icon">📈</div><div class="query-card-text"><div class="query-card-title">Best SIP for ₹10k/month</div><div class="query-card-sub">Investments</div></div></div>
+      <div class="query-card"><div class="query-card-icon">💳</div><div class="query-card-text"><div class="query-card-title">Improve credit score fast</div><div class="query-card-sub">Credit</div></div></div>
+      <div class="query-card"><div class="query-card-icon">🚗</div><div class="query-card-text"><div class="query-card-title">Car loan or buy outright?</div><div class="query-card-sub">Loans</div></div></div>
+      <div class="query-card"><div class="query-card-icon">👶</div><div class="query-card-text"><div class="query-card-title">Invest for child's education</div><div class="query-card-sub">Planning</div></div></div>
+      <div class="query-card"><div class="query-card-icon">🏖️</div><div class="query-card-text"><div class="query-card-title">Retire at 45 — is it possible?</div><div class="query-card-sub">Retirement</div></div></div>
+    </div>
+
+    <div class="cards-row reverse" style="margin-top:14px">
+      <div class="query-card"><div class="query-card-icon">📋</div><div class="query-card-text"><div class="query-card-title">File ITR without CA</div><div class="query-card-sub">Tax</div></div></div>
+      <div class="query-card"><div class="query-card-icon">💊</div><div class="query-card-text"><div class="query-card-title">Critical illness cover</div><div class="query-card-sub">Insurance</div></div></div>
+      <div class="query-card"><div class="query-card-icon">🏢</div><div class="query-card-text"><div class="query-card-title">Should I prepay my loan?</div><div class="query-card-sub">Loans</div></div></div>
+      <div class="query-card"><div class="query-card-icon">💰</div><div class="query-card-text"><div class="query-card-title">Emergency fund — how much?</div><div class="query-card-sub">Planning</div></div></div>
+      <div class="query-card"><div class="query-card-icon">📊</div><div class="query-card-text"><div class="query-card-title">Review my portfolio</div><div class="query-card-sub">Investments</div></div></div>
+      <div class="query-card"><div class="query-card-icon">🎯</div><div class="query-card-text"><div class="query-card-title">Old vs new tax regime</div><div class="query-card-sub">Tax</div></div></div>
+      <div class="query-card"><div class="query-card-icon">🌱</div><div class="query-card-text"><div class="query-card-title">Start investing with ₹2k</div><div class="query-card-sub">Investments</div></div></div>
+      <div class="query-card"><div class="query-card-icon">🤝</div><div class="query-card-text"><div class="query-card-title">Joint home loan pros & cons</div><div class="query-card-sub">Loans</div></div></div>
+      <!-- duplicate -->
+      <div class="query-card"><div class="query-card-icon">📋</div><div class="query-card-text"><div class="query-card-title">File ITR without CA</div><div class="query-card-sub">Tax</div></div></div>
+      <div class="query-card"><div class="query-card-icon">💊</div><div class="query-card-text"><div class="query-card-title">Critical illness cover</div><div class="query-card-sub">Insurance</div></div></div>
+      <div class="query-card"><div class="query-card-icon">🏢</div><div class="query-card-text"><div class="query-card-title">Should I prepay my loan?</div><div class="query-card-sub">Loans</div></div></div>
+      <div class="query-card"><div class="query-card-icon">💰</div><div class="query-card-text"><div class="query-card-title">Emergency fund — how much?</div><div class="query-card-sub">Planning</div></div></div>
+      <div class="query-card"><div class="query-card-icon">📊</div><div class="query-card-text"><div class="query-card-title">Review my portfolio</div><div class="query-card-sub">Investments</div></div></div>
+      <div class="query-card"><div class="query-card-icon">🎯</div><div class="query-card-text"><div class="query-card-title">Old vs new tax regime</div><div class="query-card-sub">Tax</div></div></div>
+      <div class="query-card"><div class="query-card-icon">🌱</div><div class="query-card-text"><div class="query-card-title">Start investing with ₹2k</div><div class="query-card-sub">Investments</div></div></div>
+      <div class="query-card"><div class="query-card-icon">🤝</div><div class="query-card-text"><div class="query-card-title">Joint home loan pros & cons</div><div class="query-card-sub">Loans</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section">
+  <div class="how-inner reveal">
+    <div class="section-label">How Sorted works</div>
+    <h2 class="how-title">From problem<br /><em>to plan to done.</em></h2>
+    <div class="steps-grid">
+      <div class="step">
+        <span class="step-num">01</span>
+        <div class="step-title">Tell us your problem</div>
+        <div class="step-body">No forms. No jargon. Just describe what's on your mind — in plain English or Hindi. Our AI figures out what you need.</div>
+        <span class="step-tag">AI + Human</span>
+      </div>
+      <div class="step">
+        <span class="step-num">02</span>
+        <div class="step-title">We build your plan</div>
+        <div class="step-body">A dedicated expert reviews your situation and puts together a personalised, unbiased recommendation — not a product catalogue.</div>
+        <span class="step-tag">Expert-led</span>
+      </div>
+      <div class="step">
+        <span class="step-num">03</span>
+        <div class="step-title">You take action</div>
+        <div class="step-body">We walk you through execution, step by step. No abandoning you mid-way. You come out the other side in a better financial position.</div>
+        <span class="step-tag">End-to-end</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ANTI PITCH -->
+<section class="anti-section">
+  <div class="anti-inner reveal">
+    <div class="section-label" style="color:#4a7c4e">What's different</div>
+    <h2 class="anti-title">Not another<br /><em>financial app.</em></h2>
+    <div class="anti-rows">
+      <div class="anti-row">
+        <div class="anti-them">Commission-driven advice</div>
+        <div class="anti-arrow">→</div>
+        <div class="anti-us">Outcome-driven, always on your side</div>
+      </div>
+      <div class="anti-row">
+        <div class="anti-them">Product marketplace overload</div>
+        <div class="anti-arrow">→</div>
+        <div class="anti-us">One personalised plan for your profile</div>
+      </div>
+      <div class="anti-row">
+        <div class="anti-them">DIY dashboards no one uses</div>
+        <div class="anti-arrow">→</div>
+        <div class="anti-us">Guided concierge, start to finish</div>
+      </div>
+      <div class="anti-row">
+        <div class="anti-them">Siloed apps for each problem</div>
+        <div class="anti-arrow">→</div>
+        <div class="anti-us">One place for all your financial needs</div>
+      </div>
+      <div class="anti-row">
+        <div class="anti-them">Advice that stops at the plan</div>
+        <div class="anti-arrow">→</div>
+        <div class="anti-us">We help you execute, not just decide</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF -->
+<section class="proof-section">
+  <div class="proof-inner reveal">
+    <div class="section-label">Early love</div>
+    <h2 class="proof-title">People are already<br /><em>getting sorted.</em></h2>
+    <div class="quotes-grid">
+      <div class="quote-card">
+        <div class="quote-stars">★★★★★</div>
+        <div class="quote-text">"I'd been putting off refinancing my home loan for 2 years. Sorted helped me do it in a week and I'm saving ₹6,400 every month now."</div>
+        <div class="quote-person">
+          <div class="quote-avatar">R</div>
+          <div>
+            <div class="quote-name">Rahul M.</div>
+            <div class="quote-role">Software Engineer, Bangalore</div>
+          </div>
+        </div>
+      </div>
+      <div class="quote-card">
+        <div class="quote-stars">★★★★★</div>
+        <div class="quote-text">"Finally someone explained old vs new tax regime in plain English and helped me switch. Saved ₹42,000 this year."</div>
+        <div class="quote-person">
+          <div class="quote-avatar">P</div>
+          <div>
+            <div class="quote-name">Priya K.</div>
+            <div class="quote-role">Marketing Manager, Mumbai</div>
+          </div>
+        </div>
+      </div>
+      <div class="quote-card">
+        <div class="quote-stars">★★★★★</div>
+        <div class="quote-text">"My insurance agent had sold me 3 policies I didn't need. Sorted reviewed everything and we cancelled 2 and got a better health cover."</div>
+        <div class="quote-person">
+          <div class="quote-avatar">A</div>
+          <div>
+            <div class="quote-name">Arun S.</div>
+            <div class="quote-role">Business Owner, Delhi</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="final-cta-inner reveal">
+    <h2 class="final-title">Your financial<br /><em>glow-up</em><br />starts here.</h2>
+    <p class="final-sub">Join the wishlist. Be the first to access Sorted when we launch.</p>
+    <div class="final-form">
+      <input type="email" placeholder="your@email.com" id="final-email" />
+      <button class="final-btn" onclick="handleWishlist('final-email')">I'm in →</button>
+    </div>
+    <div class="final-note">No spam. Just an early access invite when we're ready.</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Sorted.</div>
+  <div class="footer-links">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms</a>
+    <a href="#">Contact</a>
+  </div>
+  <div class="footer-right">© 2026 Sorted</div>
+</footer>
+
+<script>
+  // Nav scroll effect
+  window.addEventListener('scroll', () => {
+    document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) { e.target.classList.add('visible'); }
+      });
+    }, { threshold: 0.08 });
+    reveals.forEach(function(r) { observer.observe(r); });
+  } else {
+    reveals.forEach(function(r) { r.classList.add('visible'); });
+  }
+
+  // Wishlist handler
+  function handleWishlist(inputId) {
+    var input = document.getElementById(inputId);
+    var email = input.value.trim();
+    if (!email || !email.includes('@')) {
+      input.placeholder = 'Enter a valid email';
+      input.style.color = 'red';
+      return;
+    }
+    var btn = input.nextElementSibling;
+    btn.textContent = 'You\'re on the list! \u2713';
+    btn.style.background = '#c8e454';
+    btn.style.color = '#1e2a1f';
+    input.value = '';
+    input.placeholder = 'Confirmed!';
+    input.disabled = true;
+  }
+</script>
+
+</body>
+</html>
