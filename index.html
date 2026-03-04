@@ -3,901 +3,636 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sorted — Your Financial Life, Handled.</title>
+<title>sorted. — your money, sorted.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&family=Neue+Haas+Grotesk+Display+Pro:wght@400;500&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
-
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root{
+  --bg:#f5f2ec;--ink:#0f0e0c;--green:#1c7a1c;
+  --dim:#d4cfc6;--dimtxt:#8a8478;--mid:#edeae3;
+  --dark:#0a0a0f;--cream:#f0ede8;--lime:#c8f557;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--ink);font-family:'DM Mono',monospace;cursor:none;overflow-x:hidden;}
 
-  :root {
-    --bg: #0a0a0f;
-    --fg: #f0ede8;
-    --accent: #c8f557;
-    --muted: rgba(240,237,232,0.18);
-    --muted2: rgba(240,237,232,0.07);
-  }
+#cur{width:9px;height:9px;background:var(--green);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .15s,height .15s;}
+#ring{width:28px;height:28px;border:1px solid var(--green);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);opacity:.25;transition:all .2s;}
 
-  html, body {
-    width: 100%; height: 100%;
-    background: var(--bg);
-    color: var(--fg);
-    overflow-x: hidden;
-    font-family: 'DM Mono', monospace;
-    cursor: none;
-  }
+#intro{position:fixed;inset:0;z-index:400;pointer-events:none;}
+#ic{width:100%;height:100%;}
 
-  /* CUSTOM CURSOR */
-  #cursor {
-    position: fixed;
-    width: 10px; height: 10px;
-    background: var(--accent);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9999;
-    transform: translate(-50%, -50%);
-    transition: transform 0.1s, width 0.3s, height 0.3s, opacity 0.3s;
-    mix-blend-mode: difference;
-  }
-  #cursor.expand { width: 40px; height: 40px; opacity: 0.5; }
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.2rem 2.8rem;transition:background .4s,border-bottom .4s;}
+nav.sc{background:rgba(245,242,236,.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--dim);}
+.logo{font-family:'Instrument Serif',serif;font-size:1.3rem;color:var(--ink);letter-spacing:-.02em;}
+.logo em{font-style:normal;color:var(--green);}
+.nbtn{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--green);border:1px solid rgba(28,122,28,.22);padding:.45rem 1rem;background:transparent;cursor:none;text-decoration:none;transition:all .2s;}
+.nbtn:hover{background:rgba(28,122,28,.06);border-color:var(--green);}
 
-  /* CANVAS LAYER */
-  #chaos-canvas {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: 1;
-  }
+/* HERO */
+#hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:7rem 2rem 5rem;position:relative;}
+.h1{font-family:'Instrument Serif',serif;font-size:clamp(4rem,9.5vw,9.5rem);line-height:.92;letter-spacing:-.04em;color:var(--ink);opacity:0;transform:translateY(22px);transition:opacity .9s ease,transform .9s ease;}
+.h1 em{font-style:italic;color:var(--green);}
+.h1.show{opacity:1;transform:none;}
+.hsub{font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(1rem,1.9vw,1.45rem);color:var(--dimtxt);margin-top:1.8rem;opacity:0;transform:translateY(12px);transition:opacity .7s .2s,transform .7s .2s;}
+.hsub.show{opacity:1;transform:none;}
+.hact{margin-top:3rem;display:flex;flex-direction:column;align-items:center;gap:1rem;opacity:0;transform:translateY(12px);transition:opacity .7s .4s,transform .7s .4s;}
+.hact.show{opacity:1;transform:none;}
+.hform{display:flex;}
+.hform input{font-family:'DM Mono',monospace;font-size:.8rem;padding:.75rem 1.1rem;background:rgba(255,255,255,.8);border:1px solid var(--dim);border-right:none;color:var(--ink);outline:none;width:228px;cursor:none;transition:border-color .2s;}
+.hform input::placeholder{color:var(--dimtxt);}
+.hform input:focus{border-color:var(--green);}
+.hform button{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.13em;text-transform:uppercase;background:var(--green);color:#fff;border:none;padding:.75rem 1.2rem;cursor:none;font-weight:500;white-space:nowrap;transition:background .2s;}
+.hform button:hover{background:#155a15;}
+.hproof{display:flex;align-items:center;gap:.75rem;}
+.avs{display:flex;}
+.avs svg{width:28px;height:28px;border-radius:50%;border:2px solid var(--bg);margin-left:-6px;}
+.avs svg:first-child{margin-left:0;}
+.ptxt{font-size:.62rem;color:var(--dimtxt);}
+.scr{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.45rem;opacity:0;transition:opacity .6s .6s;}
+.scr.show{opacity:1;}
+.sl{width:1px;height:28px;background:linear-gradient(to bottom,rgba(28,122,28,.4),transparent);}
+.stt{font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dimtxt);}
 
-  /* HERO SECTION */
-  #hero {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
-  }
+/* SHIFT */
+#shift{background:var(--dark);padding:7rem 2.8rem;}
+.shift-lines{display:flex;flex-direction:column;max-width:960px;margin:0 auto;}
+.shl{font-family:'Instrument Serif',serif;font-size:clamp(2.8rem,6.5vw,6.2rem);line-height:1.04;letter-spacing:-.03em;padding:1.8rem 0;border-bottom:1px solid rgba(255,255,255,.07);text-align:center;}
+.shl:first-child{border-top:1px solid rgba(255,255,255,.07);}
+.shl-1{color:rgba(240,237,232,.18);}
+.shl-2{color:rgba(240,237,232,.48);font-style:italic;}
+.shl-3{color:var(--cream);}
+.shl-3 em{font-style:italic;color:var(--lime);}
 
-  #hero-text {
-    text-align: center;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 1.2s ease, transform 1.2s ease;
-    pointer-events: none;
-  }
-  #hero-text.visible { opacity: 1; transform: translateY(0); }
+/* DEMO */
+#demo{background:var(--bg);border-top:1px solid var(--dim);padding:6rem 2.8rem;overflow:visible;}
+.demo-layout{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;max-width:1100px;margin:0 auto;overflow:visible;}
+.demo-tag{font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--dimtxt);margin-bottom:.8rem;}
+.demo-h{font-family:'Instrument Serif',serif;font-size:clamp(1.9rem,3.6vw,3.2rem);color:var(--ink);letter-spacing:-.025em;line-height:1.1;margin-bottom:.8rem;}
+.demo-h em{font-style:italic;color:var(--green);}
+.demo-count{font-size:.64rem;color:var(--green);letter-spacing:.04em;margin-bottom:1.8rem;display:flex;align-items:center;gap:.5rem;}
+.demo-count::before{content:'';width:6px;height:6px;background:var(--green);border-radius:50%;display:inline-block;animation:dpulse 2s infinite;}
+@keyframes dpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.sbns{display:flex;flex-direction:column;gap:.45rem;}
+.sbtn{font-family:'DM Mono',monospace;font-size:.67rem;padding:.52rem .95rem;background:transparent;border:1px solid var(--dim);color:var(--dimtxt);cursor:none;text-align:left;transition:all .2s;display:flex;justify-content:space-between;align-items:center;}
+.sbtn::after{content:'→';opacity:0;transition:opacity .2s;}
+.sbtn:hover::after,.sbtn.on::after{opacity:1;}
+.sbtn:hover,.sbtn.on{border-color:var(--green);color:var(--green);background:rgba(28,122,28,.05);}
+.demo-more{font-size:.65rem;color:var(--dimtxt);margin-top:.9rem;font-family:'Instrument Serif',serif;font-style:italic;}
 
-  .eyebrow {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 28px;
-    font-weight: 300;
-  }
+/* PHONE + FLOATING BUBBLES */
+.demo-right{position:relative;display:flex;justify-content:center;align-items:center;min-height:560px;overflow:visible;}
+.phone{width:285px;background:#18181f;border-radius:38px;padding:11px;box-shadow:0 32px 70px rgba(0,0,0,.13),0 0 0 1px rgba(255,255,255,.06);position:relative;z-index:2;}
+.ph-notch{width:76px;height:20px;background:#18181f;border-radius:0 0 14px 14px;margin:0 auto 7px;position:relative;}
+.ph-notch::after{content:'';width:40px;height:12px;background:#0d0d0d;border-radius:8px;position:absolute;top:4px;left:50%;transform:translateX(-50%);}
+.ph-screen{background:#0c0c15;border-radius:28px;min-height:480px;display:flex;flex-direction:column;overflow:hidden;}
+.ph-hdr{padding:.85rem 1rem .65rem;border-bottom:1px solid rgba(255,255,255,.055);display:flex;align-items:center;gap:.55rem;}
+.ph-dot{width:7px;height:7px;background:var(--lime);border-radius:50%;flex-shrink:0;animation:pdot 2.2s infinite;}
+@keyframes pdot{0%,100%{opacity:1}50%{opacity:.25}}
+.ph-name{font-size:.7rem;color:var(--cream);letter-spacing:.05em;}
+.ph-live{font-size:.5rem;color:rgba(200,245,87,.4);margin-left:auto;}
+.ph-msgs{flex:1;padding:.75rem;display:flex;flex-direction:column;gap:.6rem;overflow:hidden;}
+.mu{align-self:flex-end;max-width:86%;background:rgba(255,255,255,.065);border-radius:16px 16px 3px 16px;padding:.55rem .8rem;}
+.mu p{font-family:'Instrument Serif',serif;font-style:italic;font-size:.76rem;color:rgba(240,237,232,.45);line-height:1.55;}
+.ms{align-self:flex-start;max-width:90%;background:rgba(200,245,87,.09);border:1px solid rgba(200,245,87,.14);border-radius:3px 16px 16px 16px;padding:.55rem .8rem;}
+.ms p{font-size:.73rem;color:var(--lime);line-height:1.65;}
+.ma{align-self:flex-start;width:92%;background:#1c1c26;border:1px solid rgba(200,245,87,.16);border-radius:10px;padding:.65rem .8rem;margin-top:.1rem;}
+.a-lbl{font-size:.48rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(200,245,87,.4);margin-bottom:.28rem;}
+.a-ttl{font-family:'Instrument Serif',serif;font-size:.78rem;color:var(--cream);margin-bottom:.25rem;}
+.a-det{font-size:.59rem;color:rgba(240,237,232,.35);line-height:1.65;margin-bottom:.38rem;}
+.a-cta{font-size:.57rem;color:var(--lime);letter-spacing:.06em;border-top:1px solid rgba(200,245,87,.1);padding-top:.36rem;display:block;}
+.typing{display:flex;gap:3px;padding:.55rem .8rem;align-self:flex-start;}
+.typing span{width:5px;height:5px;background:rgba(200,245,87,.3);border-radius:50%;animation:td 1.2s infinite;}
+.typing span:nth-child(2){animation-delay:.2s;}.typing span:nth-child(3){animation-delay:.4s;}
+@keyframes td{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+.ph-inp{padding:.55rem .75rem;border-top:1px solid rgba(255,255,255,.055);display:flex;gap:.5rem;align-items:center;}
+.pi-txt{flex:1;font-size:.62rem;color:rgba(240,237,232,.2);font-family:'DM Mono',monospace;}
+.pi-snd{width:24px;height:24px;background:rgba(200,245,87,.12);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;color:var(--lime);}
 
-  h1 {
-    font-family: 'Instrument Serif', serif;
-    font-size: clamp(64px, 9vw, 130px);
-    font-weight: 400;
-    line-height: 0.92;
-    letter-spacing: -0.03em;
-    color: var(--fg);
-    margin-bottom: 32px;
-  }
+/* FLOATING BUBBLES — pop out of phone */
+.fb{position:absolute;border-radius:20px;padding:.6rem 1rem;font-size:.68rem;line-height:1.5;max-width:200px;opacity:0;transform:translateY(12px) scale(.9);transition:opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1);pointer-events:none;z-index:10;white-space:nowrap;}
+.fb.white{background:#fff;color:var(--ink);box-shadow:0 8px 30px rgba(0,0,0,.1),0 2px 8px rgba(0,0,0,.06);}
+.fb.dark{background:#0f0e0c;color:var(--lime);box-shadow:0 8px 30px rgba(0,0,0,.2);}
+.fb .fb-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:.4rem;vertical-align:middle;flex-shrink:0;}
+.fb.white .fb-dot{background:var(--green);}
+.fb.dark .fb-dot{background:var(--lime);}
+.fb.visible{opacity:1;transform:translateY(0) scale(1);}
+/* Positions — spill out left and right of phone */
+.fb-1{top:8%;left:-52%;}
+.fb-2{top:22%;right:-48%;}
+.fb-3{top:50%;left:-55%;}
+.fb-4{bottom:22%;right:-50%;}
+.fb-5{bottom:6%;left:-40%;}
 
-  h1 em {
-    font-style: italic;
-    color: var(--accent);
-  }
+/* TICKER */
+#scope{background:var(--mid);border-top:1px solid var(--dim);padding:3.8rem 0;overflow:hidden;}
+.sc-lbl{font-size:.57rem;letter-spacing:.22em;text-transform:uppercase;color:var(--dimtxt);text-align:center;margin-bottom:1.8rem;}
+.trow{display:flex;width:max-content;margin-bottom:.5rem;}
+.tri{display:flex;animation:tick 80s linear infinite;}
+.tri.rev{animation:tickr 88s linear infinite;}
+.trow:hover .tri{animation-play-state:paused;}
+.tpill{font-family:'Instrument Serif',serif;font-size:.92rem;color:rgba(15,14,12,.2);border-right:1px solid var(--dim);padding:.42rem 1.7rem;white-space:nowrap;}
+@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes tickr{0%{transform:translateX(-50%)}100%{transform:translateX(0)}}
 
-  .subline {
-    font-family: 'DM Mono', monospace;
-    font-size: clamp(13px, 1.4vw, 16px);
-    color: rgba(240,237,232,0.5);
-    font-weight: 300;
-    max-width: 460px;
-    line-height: 1.7;
-    margin: 0 auto 52px;
-  }
-
-  .cta-wrap {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    justify-content: center;
-  }
-
-  .cta-primary {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    background: var(--accent);
-    color: #0a0a0f;
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    padding: 16px 32px;
-    border: none;
-    cursor: none;
-    transition: all 0.3s;
-    text-decoration: none;
-    position: relative;
-    overflow: hidden;
-  }
-  .cta-primary::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: #fff;
-    transform: translateX(-101%);
-    transition: transform 0.4s cubic-bezier(0.77,0,0.175,1);
-  }
-  .cta-primary:hover::after { transform: translateX(0); }
-  .cta-primary span { position: relative; z-index: 1; }
-
-  .cta-secondary {
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    color: rgba(240,237,232,0.4);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    border-bottom: 1px solid rgba(240,237,232,0.15);
-    padding-bottom: 2px;
-    cursor: none;
-    transition: color 0.3s;
-    text-decoration: none;
-  }
-  .cta-secondary:hover { color: var(--fg); }
-
-  /* SCROLL INDICATOR */
-  #scroll-hint {
-    position: fixed;
-    bottom: 32px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 20;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    opacity: 1;
-    transition: opacity 0.6s;
-  }
-  #scroll-hint.hidden { opacity: 0; pointer-events: none; }
-  .scroll-line {
-    width: 1px; height: 48px;
-    background: linear-gradient(to bottom, transparent, var(--accent));
-    animation: scrollpulse 2s ease-in-out infinite;
-  }
-  @keyframes scrollpulse {
-    0%,100% { opacity: 0.3; transform: scaleY(0.6); }
-    50% { opacity: 1; transform: scaleY(1); }
-  }
-  .scroll-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: rgba(240,237,232,0.3);
-  }
-
-  /* BOTTOM SECTIONS */
-  #content {
-    position: relative;
-    z-index: 10;
-  }
-
-  .section {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 80px 40px;
-  }
-
-  /* ── CONVERSATIONS SECTION ───────────────────────────── */
-  #confessions {
-    background: var(--bg);
-    position: relative;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 120px 40px;
-  }
-
-  .conv-inner {
-    max-width: 680px;
-    width: 100%;
-  }
-
-  .conv-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    color: rgba(240,237,232,0.2);
-    margin-bottom: 88px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-  .conv-label::before {
-    content: '';
-    width: 20px; height: 1px;
-    background: rgba(240,237,232,0.15);
-    flex-shrink: 0;
-  }
-
-  /* Each exchange: thought + reply */
-  .conv-exchange {
-    margin-bottom: 80px;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 1.2s cubic-bezier(0.16,1,0.3,1),
-                transform 1.2s cubic-bezier(0.16,1,0.3,1);
-  }
-  .conv-exchange:last-of-type { margin-bottom: 0; }
-  .conv-exchange.appeared { opacity: 1; transform: translateY(0); }
-
-  /* The human thought */
-  .conv-thought {
-    font-family: 'Instrument Serif', serif;
-    font-size: clamp(22px, 2.8vw, 38px);
-    color: rgba(240,237,232,0.78);
-    line-height: 1.28;
-    letter-spacing: -0.02em;
-    font-style: italic;
-    margin-bottom: 20px;
-  }
-
-  /* The reply line */
-  .conv-reply {
-    font-family: 'DM Mono', monospace;
-    font-size: clamp(12px, 1.1vw, 14px);
-    color: var(--accent);
-    letter-spacing: 0.04em;
-    line-height: 1.6;
-    font-weight: 300;
-    min-height: 1.6em;
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-  .conv-reply.typing { opacity: 1; }
-  .conv-reply::before {
-    content: '→';
-    opacity: 0.4;
-    flex-shrink: 0;
-    margin-top: 1px;
-    font-style: normal;
-  }
-
-  /* blinking cursor inside reply */
-  .reply-cursor {
-    display: inline-block;
-    width: 7px; height: 1.1em;
-    background: var(--accent);
-    opacity: 0.7;
-    margin-left: 2px;
-    vertical-align: text-bottom;
-    animation: cur-blink 0.9s step-end infinite;
-  }
-  @keyframes cur-blink {
-    0%,100% { opacity: 0.7; }
-    50% { opacity: 0; }
-  }
-
-  /* divider */
-  .conv-exchange + .conv-exchange {
-    padding-top: 0;
-  }
-  .conv-exchange + .conv-exchange .conv-thought {
-    position: relative;
-  }
-  .conv-exchange + .conv-exchange .conv-thought::before {
-    content: '';
-    display: block;
-    width: 32px; height: 1px;
-    background: rgba(240,237,232,0.07);
-    margin-bottom: 64px;
-  }
-
-  /* heard-this closer */
-  .heard-this {
-    margin-top: 96px;
-    padding-top: 48px;
-    border-top: 1px solid rgba(240,237,232,0.07);
-    opacity: 0;
-    transform: translateY(12px);
-    transition: opacity 1s ease, transform 1s ease;
-  }
-  .heard-this.visible { opacity: 1; transform: translateY(0); }
-  .heard-line {
-    font-family: 'Instrument Serif', serif;
-    font-size: clamp(20px, 2.4vw, 30px);
-    color: var(--fg);
-    letter-spacing: -0.02em;
-    line-height: 1.4;
-  }
-  .heard-line em { color: var(--accent); font-style: italic; }
-
-  /* ── MANIFESTO SECTION ───────────────────────────────── */
-  #manifesto {
-    background: var(--accent);
-    min-height: 100vh;
-  }
-  .manifesto-inner {
-    max-width: 860px;
-    text-align: center;
-  }
-  .manifesto-inner p {
-    font-family: 'Instrument Serif', serif;
-    font-size: clamp(28px, 4.5vw, 60px);
-    color: #0a0a0f;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-  }
-  .manifesto-inner p em { font-style: italic; opacity: 0.45; }
-
-  /* ── FINAL CTA — SPLIT REVEAL ────────────────────────── */
-  #final-cta {
-    background: var(--accent);
-    flex-direction: column;
-    gap: 0;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* The two dark panels that slide apart */
-  #final-cta .split-left,
-  #final-cta .split-right {
-    position: absolute;
-    top: 0; bottom: 0;
-    width: 50%;
-    background: var(--bg);
-    z-index: 2;
-    transition: transform 1.4s cubic-bezier(0.77, 0, 0.175, 1);
-    will-change: transform;
-  }
-  #final-cta .split-left  { left: 0;  transform: translateX(0); }
-  #final-cta .split-right { right: 0; transform: translateX(0); }
-
-  #final-cta.revealed .split-left  { transform: translateX(-100%); }
-  #final-cta.revealed .split-right { transform: translateX(100%); }
-
-  /* content sits behind panels, fades in after reveal */
-  #final-cta .cta-content {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    opacity: 0;
-    transform: translateY(16px);
-    transition: opacity 0.8s ease 1s, transform 0.8s ease 1s;
-  }
-  #final-cta.revealed .cta-content {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* thin seam line between panels before reveal */
-  #final-cta .split-seam {
-    position: absolute;
-    top: 0; bottom: 0;
-    left: 50%;
-    width: 1px;
-    background: rgba(200,245,87,0.15);
-    z-index: 3;
-    transform: translateX(-50%);
-    transition: opacity 0.4s ease 1s;
-  }
-  #final-cta.revealed .split-seam { opacity: 0; }
-
-  .final-eyebrow {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: rgba(10,10,15,0.4);
-    margin-bottom: 40px;
-  }
-  .final-title {
-    font-family: 'Instrument Serif', serif;
-    font-size: clamp(60px, 10vw, 140px);
-    color: #0a0a0f;
-    line-height: 0.9;
-    letter-spacing: -0.04em;
-    margin-bottom: 64px;
-  }
-  .final-title em { font-style: italic; }
-  .store-badges {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 60px;
-  }
-  .store-badge {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 16px 36px;
-    border: 1.5px solid rgba(10,10,15,0.25);
-    color: #0a0a0f;
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    text-decoration: none;
-    transition: all 0.35s;
-    cursor: none;
-    background: transparent;
-    position: relative;
-    overflow: hidden;
-  }
-  .store-badge::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: #0a0a0f;
-    transform: translateY(101%);
-    transition: transform 0.4s cubic-bezier(0.77,0,0.175,1);
-  }
-  .store-badge:hover::after { transform: translateY(0); }
-  .store-badge:hover { color: var(--accent); border-color: #0a0a0f; }
-  .store-badge > * { position: relative; z-index: 1; }
-  .badge-icon { font-size: 16px; }
-  .final-footnote {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    color: rgba(10,10,15,0.28);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-  }
-
-  /* ── NOISE OVERLAY ───────────────────────────────────── */
-  .noise {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    opacity: 0.03;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-size: 128px;
-  }
-
-  /* ── PHASE INDICATOR ─────────────────────────────────── */
-  #phase-bar {
-    position: fixed;
-    top: 28px; right: 32px;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    opacity: 0;
-    transition: opacity 0.5s;
-  }
-  #phase-bar.visible { opacity: 1; }
-  #phase-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: rgba(240,237,232,0.4);
-  }
-  #phase-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-    animation: blink 1.5s ease-in-out infinite;
-  }
-  @keyframes blink {
-    0%,100% { opacity: 1; }
-    50% { opacity: 0.2; }
-  }
-
-  /* ── NAV ─────────────────────────────────────────────── */
-  #nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 100;
-    padding: 24px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .nav-logo {
-    font-family: 'Instrument Serif', serif;
-    font-size: 22px;
-    color: var(--fg);
-    letter-spacing: -0.02em;
-  }
-  .nav-logo span { color: var(--accent); }
-
-  @media (max-width: 768px) {
-    #nav { padding: 20px 24px; }
-    h1 { font-size: 52px; }
-    #confessions { padding: 80px 28px; }
-    #closing, #final-cta { padding: 80px 28px; }
-  }
+/* CTA */
+#cta{min-height:76vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:7rem 2rem;background:var(--dark);position:relative;overflow:hidden;}
+#cta-cv{position:absolute;inset:0;z-index:0;opacity:.4;}
+.cta-in{position:relative;z-index:1;max-width:520px;}
+.ch{font-family:'Instrument Serif',serif;font-size:clamp(2.4rem,5.5vw,5rem);line-height:1.05;letter-spacing:-.035em;color:var(--cream);margin-bottom:2.2rem;}
+.ch em{font-style:italic;color:var(--lime);}
+.cok{display:none;font-family:'Instrument Serif',serif;font-style:italic;font-size:1.05rem;color:var(--lime);padding:.6rem 0 1.4rem;}
+.cerr{font-size:.63rem;color:#d06060;display:none;margin-bottom:.6rem;}
+.one-q{margin-bottom:.55rem;}
+.one-q select{font-family:'DM Mono',monospace;font-size:.7rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:rgba(240,237,232,.3);padding:.65rem 1rem;width:100%;max-width:370px;cursor:none;outline:none;appearance:none;transition:all .2s;}
+.one-q select:focus{color:var(--cream);border-color:rgba(200,245,87,.3);}
+.cform{display:flex;justify-content:center;margin-bottom:.7rem;}
+.cform input{font-family:'DM Mono',monospace;font-size:.8rem;padding:.78rem 1.1rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.11);border-right:none;color:var(--cream);outline:none;width:238px;cursor:none;transition:border-color .2s;}
+.cform input::placeholder{color:rgba(240,237,232,.25);}
+.cform input:focus{border-color:rgba(200,245,87,.4);}
+.cform button{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.13em;text-transform:uppercase;background:var(--lime);color:var(--dark);border:none;padding:.78rem 1.2rem;cursor:none;font-weight:500;white-space:nowrap;transition:background .2s;}
+.cform button:hover{background:#d8ff66;}
+.cnote{font-size:.6rem;color:rgba(240,237,232,.2);line-height:2.1;}
+footer{background:var(--dark);border-top:1px solid rgba(255,255,255,.07);padding:1.6rem 2.8rem;display:flex;justify-content:space-between;align-items:center;}
+.fl{font-family:'Instrument Serif',serif;font-size:1.05rem;color:var(--cream);}
+.fl em{font-style:normal;color:var(--lime);}
+.fn{font-size:.58rem;color:rgba(240,237,232,.2);letter-spacing:.06em;}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .7s ease,transform .7s ease;}
+.reveal.in{opacity:1;transform:none;}
+@media(max-width:1000px){.demo-layout{grid-template-columns:1fr;gap:3rem;}.demo-left{text-align:center;}.sbns{flex-direction:row;flex-wrap:wrap;justify-content:center;}.demo-right{min-height:480px;}.fb{display:none;}}
+@media(max-width:640px){nav{padding:1rem 1.5rem;}#hero,#shift,#demo,#cta{padding:5rem 1.5rem;}#scope{padding:3rem 0;}.hform{flex-direction:column;width:268px;}.hform input{width:100%;border-right:1px solid var(--dim);border-bottom:none;}.cform{flex-direction:column;align-items:center;}.cform input{width:268px;border-right:1px solid rgba(255,255,255,.11);border-bottom:none;}footer{flex-direction:column;gap:.8rem;text-align:center;}}
 </style>
 </head>
 <body>
-
-<div id="cursor"></div>
-<div class="noise"></div>
-<canvas id="chaos-canvas"></canvas>
+<div id="cur"></div><div id="ring"></div>
+<div id="intro"><canvas id="ic"></canvas></div>
 
 <nav id="nav">
-  <div class="nav-logo">sorted<span>.</span></div>
-  <div id="phase-bar">
-    <div id="phase-dot"></div>
-    <div id="phase-label">sorting...</div>
-  </div>
+  <div class="logo">sorted<em>.</em></div>
+  <a href="#cta" class="nbtn">Join waitlist</a>
 </nav>
 
-<div id="scroll-hint">
-  <div class="scroll-line"></div>
-  <div class="scroll-label">scroll</div>
-</div>
-
-<!-- HERO -->
 <section id="hero">
-  <div id="hero-text">
-    <div class="eyebrow">Financial Concierge — India</div>
-    <h1>Your money,<br><em>finally sorted.</em></h1>
-    <p class="subline">Tell us what you need. We handle everything else — taxes, investments, insurance, and beyond.</p>
-    <div class="cta-wrap">
-      <a href="#" class="cta-primary">
-        <span>Download the App</span>
-      </a>
-      <a href="#features" class="cta-secondary">See what we do →</a>
+  <h1 class="h1" id="h1">Your money,<br><em>Sorted.</em></h1>
+  <p class="hsub" id="hsub">The money friend you never had — for every financial thing in your life.</p>
+  <div class="hact" id="hact">
+    <form class="hform" id="hf" onsubmit="return sh(event)">
+      <input type="email" id="he" placeholder="your@email.com" autocomplete="off">
+      <button type="submit">Get early access →</button>
+    </form>
+    <div class="hproof">
+      <div class="avs">
+        <svg viewBox="0 0 28 28"><circle cx="14" cy="14" r="14" fill="#7a7470"/><ellipse cx="14" cy="12" rx="4.5" ry="5.5" fill="#5a5250"/><circle cx="12" cy="12" r=".75" fill="#1a1714"/><circle cx="16" cy="12" r=".75" fill="#1a1714"/><path d="M11.5 14.5Q14 16 16.5 14.5" stroke="#1a1714" stroke-width=".75" fill="none" stroke-linecap="round"/><path d="M9 23Q14 18.5 19 23" fill="#4a4240"/></svg>
+        <svg viewBox="0 0 28 28"><circle cx="14" cy="14" r="14" fill="#9a9590"/><ellipse cx="14" cy="12" rx="4.5" ry="5.5" fill="#7a7268"/><circle cx="12" cy="12" r=".75" fill="#1e1a18"/><circle cx="16" cy="12" r=".75" fill="#1e1a18"/><path d="M11.5 14.5Q14 16.5 16.5 14.5" stroke="#1e1a18" stroke-width=".75" fill="none" stroke-linecap="round"/><path d="M9 23Q14 18.5 19 23" fill="#6a6460"/></svg>
+        <svg viewBox="0 0 28 28"><circle cx="14" cy="14" r="14" fill="#b4afa6"/><ellipse cx="14" cy="12" rx="4.5" ry="5.5" fill="#948e84"/><circle cx="12" cy="12" r=".75" fill="#2a2520"/><circle cx="16" cy="12" r=".75" fill="#2a2520"/><path d="M11.5 14.5Q14 16.5 16.5 14.5" stroke="#2a2520" stroke-width=".75" fill="none" stroke-linecap="round"/><path d="M9 23Q14 18.5 19 23" fill="#7a7470"/></svg>
+        <svg viewBox="0 0 28 28"><circle cx="14" cy="14" r="14" fill="#65605c"/><ellipse cx="14" cy="12" rx="4.5" ry="5.5" fill="#46423e"/><circle cx="12" cy="12" r=".75" fill="#0e0c0a"/><circle cx="16" cy="12" r=".75" fill="#0e0c0a"/><path d="M11.5 14Q14 15.5 16.5 14" stroke="#0e0c0a" stroke-width=".75" fill="none" stroke-linecap="round"/><path d="M9 23Q14 18.5 19 23" fill="#363230"/></svg>
+      </div>
+      <span class="ptxt">2,400+ already on the waitlist</span>
+    </div>
+  </div>
+  <div class="scr" id="scr"><span class="stt">scroll</span><div class="sl"></div></div>
+</section>
+
+<section id="shift">
+  <div class="shift-lines reveal">
+    <p class="shl shl-1">Most apps show you dashboards.</p>
+    <p class="shl shl-2">We think that's lazy.</p>
+    <p class="shl shl-3"><em>sorted.</em> does the work.</p>
+  </div>
+</section>
+
+<section id="demo">
+  <div class="demo-layout">
+    <div class="demo-left reveal">
+      <div class="demo-tag">— A conversation that ends in action</div>
+      <h2 class="demo-h">This is what using<br><em>Sorted feels like.</em></h2>
+      <div class="demo-count">847 conversations handled today</div>
+      <div class="sbns">
+        <button class="sbtn on" onclick="loadS(0,this)">File my ITR</button>
+        <button class="sbtn" onclick="loadS(1,this)">Start a SIP</button>
+        <button class="sbtn" onclick="loadS(2,this)">Fix my credit score</button>
+        <button class="sbtn" onclick="loadS(3,this)">Get term insurance</button>
+      </div>
+      <div class="demo-more">and many more...</div>
+    </div>
+    <div class="demo-right reveal">
+      <!-- Floating bubbles — pop out of phone -->
+      <div class="fb white fb-1" id="fb1"><span class="fb-dot"></span>ITR filed. ₹18,400 refund incoming.</div>
+      <div class="fb dark fb-2" id="fb2"><span class="fb-dot"></span>SIP started. ₹3,000/mo set.</div>
+      <div class="fb white fb-3" id="fb3"><span class="fb-dot"></span>Credit score 694 → 748. Done.</div>
+      <div class="fb dark fb-4" id="fb4"><span class="fb-dot"></span>Term cover locked. ₹620/mo.</div>
+      <div class="fb white fb-5" id="fb5"><span class="fb-dot"></span>PF: ₹2.4L found. Put to work.</div>
+      <div class="phone">
+        <div class="ph-notch"></div>
+        <div class="ph-screen">
+          <div class="ph-hdr">
+            <div class="ph-dot"></div>
+            <div class="ph-name">sorted.</div>
+            <div class="ph-live">online</div>
+          </div>
+          <div class="ph-msgs" id="msgs"></div>
+          <div class="ph-inp">
+            <div class="pi-txt" id="pi-txt">Ask anything about your money...</div>
+            <div class="pi-snd">→</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- CONTENT -->
-<div id="content">
+<section id="scope">
+  <div class="sc-lbl">Everything you've been putting off — sorted.</div>
+  <div class="trow"><div class="tri" id="ti1"></div><div class="tri" id="ti2"></div></div>
+  <div class="trow"><div class="tri rev" id="ti3"></div><div class="tri rev" id="ti4"></div></div>
+</section>
 
-  <!-- MANIFESTO -->
-  <section class="section" id="manifesto">
-    <div class="manifesto-inner">
-      <p>Most apps show you dashboards.<br><em>We think that's lazy.</em><br>Sorted does the work.</p>
-    </div>
-  </section>
-
-  <!-- CONVERSATIONS -->
-  <section id="confessions">
-    <div class="conv-inner">
-      <div class="conv-label">Things people actually think</div>
-
-      <div class="conv-exchange" data-reply="Eight months. That money's been napping. We put it to work.">
-        <div class="conv-thought">"I got a ₹4L bonus and I've had it sitting in my savings account for eight months."</div>
-        <div class="conv-reply"><span class="reply-text"></span></div>
+<section id="cta">
+  <canvas id="cta-cv"></canvas>
+  <div class="cta-in reveal">
+    <h2 class="ch">Finally, a financial life<br><em>that runs itself.</em></h2>
+    <div class="cok" id="cok">You're on the list. We'll reach out. ✦</div>
+    <form id="cf" onsubmit="return sc(event)">
+      <div class="cerr" id="cerr">Please enter a valid email.</div>
+      <div class="one-q">
+        <select id="qs"><option value="" disabled selected>What's your biggest financial headache?</option><option>I keep putting off my tax filing</option><option>I want to invest but don't know where to start</option><option>Insurance feels like a mess</option><option>No idea what's happening with my PF</option><option>My savings just don't seem to grow</option><option>Credit score and loans feel out of control</option><option>All of the above, honestly</option></select>
       </div>
-
-      <div class="conv-exchange" data-reply="The government owes you money. Has for a while. We just went and got it.">
-        <div class="conv-thought">"I keep meaning to file my ITR. It's been three years."</div>
-        <div class="conv-reply"><span class="reply-text"></span></div>
+      <div class="cform">
+        <input type="email" id="ce" placeholder="your@email.com" autocomplete="off">
+        <button type="submit">Join waitlist →</button>
       </div>
+    </form>
+    <p class="cnote">No spam. No app to download yet.<br>Just a conversation when we're ready.</p>
+  </div>
+</section>
 
-      <div class="conv-exchange" data-reply="You can stop lying to them now.">
-        <div class="conv-thought">"My parents keep asking if I have term insurance. I keep saying yes."</div>
-        <div class="conv-reply"><span class="reply-text"></span></div>
-      </div>
-
-      <div class="conv-exchange" data-reply="It's fine. It's yours. You just never looked.">
-        <div class="conv-thought">"I have no idea what my PF balance is or if anyone's been stealing from it."</div>
-        <div class="conv-reply"><span class="reply-text"></span></div>
-      </div>
-
-      <div class="heard-this" id="heardThis">
-        <div class="heard-line">We've heard all of this.<br><em>We handle all of this.</em></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FINAL CTA -->
-  <section class="section" id="final-cta">
-    <!-- dark panels that split apart -->
-    <div class="split-left"></div>
-    <div class="split-seam"></div>
-    <div class="split-right"></div>
-    <!-- content revealed underneath -->
-    <div class="cta-content">
-      <div class="final-eyebrow">Available on iOS &amp; Android</div>
-      <div class="final-title">Ready to be<br><em>sorted?</em></div>
-      <div class="store-badges">
-        <a href="#" class="store-badge"><span class="badge-icon">✦</span><span>App Store</span></a>
-        <a href="#" class="store-badge"><span class="badge-icon">✦</span><span>Google Play</span></a>
-      </div>
-      <div class="final-footnote">© 2025 Sorted Financial Technologies Pvt. Ltd. — Mumbai</div>
-    </div>
-  </section>
-
-</div>
-
+<footer><div class="fl">sorted<em>.</em></div><div class="fn">© 2025 · Mumbai · Built for Bharat</div></footer>
 
 <script>
-// ─── CURSOR ───────────────────────────────────────────────
-const cursor = document.getElementById('cursor');
-let mx = -100, my = -100;
-document.addEventListener('mousemove', e => {
-  mx = e.clientX; my = e.clientY;
-  cursor.style.left = mx + 'px';
-  cursor.style.top = my + 'px';
-});
-document.querySelectorAll('a, button').forEach(el => {
-  el.addEventListener('mouseenter', () => cursor.classList.add('expand'));
-  el.addEventListener('mouseleave', () => cursor.classList.remove('expand'));
+// CURSOR
+const cur=document.getElementById('cur'),ring=document.getElementById('ring');
+let mx=-200,my=-200,rx=-200,ry=-200;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+(function loop(){cur.style.left=mx+'px';cur.style.top=my+'px';rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop);})();
+document.querySelectorAll('a,button,input,select,.sbtn').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.width='3px';cur.style.height='3px';ring.style.width='44px';ring.style.height='44px';ring.style.opacity='.15';});
+  el.addEventListener('mouseleave',()=>{cur.style.width='9px';cur.style.height='9px';ring.style.width='28px';ring.style.height='28px';ring.style.opacity='.25';});
 });
 
-// ─── CHAOS CANVAS ─────────────────────────────────────────
-const canvas = document.getElementById('chaos-canvas');
-const ctx = canvas.getContext('2d');
+// INTRO ANIMATION — chaos → full-screen dense grid → headline → fade
+const ic=document.getElementById('ic'),ctx=ic.getContext('2d');
+function rsz(){ic.width=window.innerWidth;ic.height=window.innerHeight;}
+rsz();window.addEventListener('resize',()=>{rsz();particles=null;});
 
-let W, H, particles, sortPhase = false, sortProgress = 0;
-let animId;
-
-const WORDS = [
+// Dense grid of Indian finance terms — fills the entire screen
+const GRID_WORDS = [
   'ITR','SIP','EMI','NPS','EPF','HRA','TDS','FD','ELSS','LTCG','STCG','PPF',
   'KYC','PAN','SEBI','RBI','CIBIL','UPI','NEFT','GST','80C','80D','44ADA',
   'XIRR','NAV','AUM','NFO','REITs','SGBs','F&O','CAS','P2P','₹14L','₹3Cr',
   '30%','26%','10%','2.5L','1.5L','0%','7.1%','12%','15%','24%',
-  'Mutual Fund','Term Plan','Home Loan','Credit Score',
-  'Portfolio','Nominee','Maturity','Redemption',
-  'Capital Gain','Dividend','Indexation','Surcharge',
-  'Budget','Expenses','Savings','Goals','Wealth',
+  'Mutual Fund','Term Plan','Home Loan','Credit Score','Portfolio',
+  'Nominee','Maturity','Redemption','Capital Gain','Dividend',
+  'Indexation','Surcharge','Budget','Expenses','Savings','Goals','Wealth',
+  'ITR','SIP','EMI','NPS','EPF','HRA','TDS','FD','ELSS','LTCG',
+  'STCG','PPF','KYC','PAN','SEBI','RBI','CIBIL','UPI','NEFT','GST',
+  '80C','80D','44ADA','XIRR','NAV','AUM','NFO','REITs','SGBs','F&O',
+  'CAS','P2P','₹14L','₹3Cr','30%','26%','10%','2.5L',
+  'Mutual Fund','Term Plan','Home Loan','Credit Score','Portfolio',
+  'Nominee','Maturity','Redemption','Capital Gain','Dividend','Indexation',
+  'Surcharge','Budget','Expenses','Savings','Goals','Wealth',
 ];
 
-function resize() {
-  W = canvas.width = window.innerWidth;
-  H = canvas.height = window.innerHeight;
+// Chaos: ₹ amounts that fly wild and fade
+const CHAOS_WORDS = [
+  '₹18,400','₹2,300','₹3,000/mo','₹1Cr','₹15,600','₹9,200',
+  '₹620/mo','₹45,000','₹6.9L','₹84,000','₹12,500','₹2,40,000',
+  '₹38,000','₹1,08,000','₹650/mo','₹72,000','₹5,500/mo','₹25L',
+];
+
+let particles = null;
+
+function buildParticles() {
+  const W = ic.width, H = ic.height;
+
+  // Build a dense grid that fills the screen edge to edge
+  // Measure average char width to size columns
+  ctx.font = '400 13px DM Mono, monospace';
+  const COL_W = 96, ROW_H = 52;
+  const COLS = Math.ceil(W / COL_W) + 1;
+  const ROWS = Math.ceil(H / ROW_H) + 1;
+  const totalCells = COLS * ROWS;
+
+  // Tile GRID_WORDS across all cells
+  const gridPts = [];
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const idx = (r * COLS + c) % GRID_WORDS.length;
+      gridPts.push({
+        word: GRID_WORDS[idx],
+        tx: c * COL_W + COL_W / 2,
+        ty: r * ROW_H + ROW_H / 2,
+      });
+    }
+  }
+
+  // Each grid particle starts at a random chaotic position
+  const tagP = gridPts.map(g => ({
+    word: g.word,
+    tx: g.tx, ty: g.ty,
+    x: Math.random() * W,
+    y: Math.random() * H,
+    vx: (Math.random() - .5) * 7,
+    vy: (Math.random() - .5) * 7,
+    rot: (Math.random() - .5) * 2.5,
+    sz: 11 + Math.random() * 4,
+    // vary opacity per cell for visual depth
+    baseAlpha: 0.18 + Math.random() * 0.35,
+  }));
+
+  // Chaos ₹ particles
+  const amtP = CHAOS_WORDS.map(w => ({
+    w,
+    x: W * .1 + Math.random() * W * .8,
+    y: H * .1 + Math.random() * H * .8,
+    vx: (Math.random() - .5) * 9,
+    vy: (Math.random() - .5) * 9,
+    rot: (Math.random() - .5) * 2.8,
+    rv: (Math.random() - .5) * .09,
+    sz: 13 + Math.random() * 10,
+  }));
+
+  return { tagP, amtP, W, H };
 }
 
-class Particle {
-  constructor(i, total) {
-    this.index = i;
-    this.total = total;
-    this.word = WORDS[i % WORDS.length];
-    this.reset();
-    this.computeTarget(i, total);
+let t0 = performance.now(), introDone = false;
+function eOut(t) { return 1 - Math.pow(1 - Math.min(1, t), 3); }
+function eInOut(t) { return t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2; }
+
+// Timeline
+// 0–1200:    pure chaos — ₹ amounts fly, grid words scattered randomly
+// 1200–3400: grid words snap to position, ₹ amounts fade out
+// 3400–4300: grid fully settled, readable — brief pause
+// 4300–4700: headline "Your money, finally sorted." overlaid
+// 4700–5500: fade to white, hero rises
+
+function drawIntro(ts) {
+  if (introDone) return;
+  if (!particles) particles = buildParticles();
+  const el = ts - t0;
+  const W = ic.width, H = ic.height;
+
+  // Light warm bg
+  ctx.fillStyle = '#f5f2ec';
+  ctx.fillRect(0, 0, W, H);
+
+  const sortProg = eOut(Math.max(0, (el - 1200) / 2200));
+
+  // ── CHAOS ₹ AMOUNTS — fly around, fade as sorting begins
+  const amtAlpha = Math.max(0, 1 - sortProg * 2.2) * Math.min(1, el / 300);
+  if (amtAlpha > 0.01) {
+    particles.amtP.forEach(p => {
+      p.x += p.vx * (1 - sortProg * 8);
+      p.y += p.vy * (1 - sortProg * 8);
+      if (p.x < -50) p.x = W + 50;
+      if (p.x > W + 50) p.x = -50;
+      if (p.y < -30) p.y = H + 30;
+      if (p.y > H + 30) p.y = -30;
+      p.rot += p.rv;
+      ctx.save();
+      ctx.globalAlpha = amtAlpha * .75;
+      ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+      ctx.font = `600 ${p.sz}px 'DM Mono', monospace`;
+      ctx.fillStyle = '#b05535';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(p.w, 0, 0);
+      ctx.restore();
+    });
   }
 
-  reset() {
-    this.x = Math.random() * W;
-    this.y = Math.random() * H;
-    this.vx = (Math.random() - 0.5) * 2.2;
-    this.vy = (Math.random() - 0.5) * 2.2;
-    this.baseSize = 10 + Math.random() * 8;
-    this.size = this.baseSize;
-    this.alpha = 0.12 + Math.random() * 0.55;
-    this.baseAlpha = this.alpha;
-    this.angle = Math.random() * Math.PI * 2;
-    this.angleSpeed = (Math.random() - 0.5) * 0.02;
-    this.color = Math.random() < 0.12 ? '#c8f557' : '#f0ede8';
-    this.phase = Math.random() * Math.PI * 2;
-    this.wobble = 0.3 + Math.random() * 0.7;
-    this.tx = 0; this.ty = 0;
-  }
-
-  computeTarget(i, total) {
-    // arrange into orderly grid-like columns
-    const cols = Math.ceil(Math.sqrt(total * 1.6));
-    const rows = Math.ceil(total / cols);
-    const col = i % cols;
-    const row = Math.floor(i / cols);
-    const marginX = W * 0.08;
-    const marginY = H * 0.12;
-    const cellW = (W - marginX * 2) / cols;
-    const cellH = (H - marginY * 2) / rows;
-    this.tx = marginX + col * cellW + cellW * 0.5;
-    this.ty = marginY + row * cellH + cellH * 0.5;
-  }
-
-  updateChaos() {
-    this.vx += (Math.random() - 0.5) * 0.15;
-    this.vy += (Math.random() - 0.5) * 0.15;
-    this.vx *= 0.98;
-    this.vy *= 0.98;
-    this.x += this.vx;
-    this.y += this.vy;
-    this.angle += this.angleSpeed;
-    if (this.x < -60) this.x = W + 60;
-    if (this.x > W + 60) this.x = -60;
-    if (this.y < -30) this.y = H + 30;
-    if (this.y > H + 30) this.y = -30;
-    // cursor repulsion
-    const dx = this.x - mx, dy = this.y - my;
-    const dist = Math.sqrt(dx*dx + dy*dy);
-    if (dist < 140) {
-      const force = (140 - dist) / 140;
-      this.vx += (dx/dist) * force * 1.8;
-      this.vy += (dy/dist) * force * 1.8;
+  // ── GRID TAGS — sort into position
+  particles.tagP.forEach(p => {
+    // Smooth ease to target
+    p.x += (p.tx - p.x) * sortProg * .08 + (sortProg < .02 ? p.vx : 0);
+    p.y += (p.ty - p.y) * sortProg * .08 + (sortProg < .02 ? p.vy : 0);
+    if (sortProg < .02) {
+      if (p.x < 0 || p.x > W) p.vx *= -1;
+      if (p.y < 0 || p.y > H) p.vy *= -1;
     }
-    this.size = this.baseSize + Math.sin(Date.now() * 0.001 * this.wobble + this.phase) * 1.5;
-    this.alpha = this.baseAlpha * (0.7 + 0.3 * Math.sin(Date.now() * 0.0008 + this.phase));
-  }
+    p.rot *= sortProg > .05 ? .88 : 1;
 
-  updateSort(t) {
-    // ease toward target
-    const ease = 1 - Math.pow(1 - t, 3);
-    this.x += (this.tx - this.x) * 0.04 * (0.5 + ease);
-    this.y += (this.ty - this.y) * 0.04 * (0.5 + ease);
-    this.angle *= 0.94;
-    this.alpha = this.baseAlpha + (0.85 - this.baseAlpha) * ease;
-    this.size = this.baseSize * (1 - 0.25 * ease);
-    this.color = `rgb(${Math.round(200 + 40*ease)}, ${Math.round(237 + 0*ease)}, ${Math.round(232 - 40*ease)})`;
-  }
+    // Alpha: dim during chaos, full when settled
+    const settled = sortProg > .8;
+    const alpha = Math.min(1, el / 400) * (p.baseAlpha + sortProg * (.55 - p.baseAlpha));
 
-  draw() {
     ctx.save();
-    ctx.translate(this.x, this.y);
-    ctx.rotate(this.angle);
-    ctx.globalAlpha = this.alpha;
-    ctx.fillStyle = this.color;
-    ctx.font = `300 ${this.size}px "DM Mono", monospace`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(this.word, 0, 0);
+    ctx.globalAlpha = alpha;
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot * (1 - sortProg));
+    // Font weight and color shift as it settles
+    const wt = sortProg > .7 ? '500' : '400';
+    ctx.font = `${wt} ${p.sz}px 'DM Mono', monospace`;
+    // Ink color — some words slightly green-tinted when settled
+    const isFinancial = ['ITR','SIP','EMI','EPF','NPS','CIBIL','ELSS'].includes(p.word);
+    if (settled && isFinancial) {
+      ctx.fillStyle = '#1c7a1c';
+    } else {
+      ctx.fillStyle = '#0f0e0c';
+    }
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(p.word, 0, 0);
+    ctx.restore();
+  });
+
+  // Subtle grid lines when settled
+  if (sortProg > .75) {
+    const la = (sortProg - .75) / .25 * .04;
+    ctx.strokeStyle = `rgba(28,122,28,${la})`;
+    ctx.lineWidth = .4;
+    const COL_W = 96, ROW_H = 52;
+    const COLS = Math.ceil(W / COL_W) + 1;
+    const ROWS = Math.ceil(H / ROW_H) + 1;
+    for (let c = 0; c <= COLS; c++) {
+      ctx.beginPath(); ctx.moveTo(c * COL_W, 0); ctx.lineTo(c * COL_W, H); ctx.stroke();
+    }
+    for (let r = 0; r <= ROWS; r++) {
+      ctx.beginPath(); ctx.moveTo(0, r * ROW_H); ctx.lineTo(W, r * ROW_H); ctx.stroke();
+    }
+  }
+
+  // ── HEADLINE overlay — appears over settled grid
+  const hlStart = 3400;
+  if (el > hlStart) {
+    const ha = eOut((el - hlStart) / 500);
+    const sz = Math.min(W * .1, 96);
+
+    // Dim the grid softly behind text (don't fully hide — key effect is grid + headline together)
+    ctx.save();
+    ctx.globalAlpha = ha * .45;
+    ctx.fillStyle = '#f5f2ec';
+    ctx.fillRect(W * .08, H / 2 - sz * 1.4, W * .84, sz * 3.2);
+    ctx.restore();
+
+    ctx.save();
+    ctx.globalAlpha = ha;
+    // Line 1: "Your money,"
+    ctx.font = `normal ${sz}px 'Times New Roman', serif`;
+    ctx.fillStyle = '#0f0e0c';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('Your money,', W / 2, H / 2 - sz * .58);
+    // Line 2: "finally sorted."
+    ctx.font = `italic ${sz * 1.06}px 'Times New Roman', serif`;
+    ctx.fillStyle = '#1c7a1c';
+    ctx.fillText('finally sorted.', W / 2, H / 2 + sz * .52);
     ctx.restore();
   }
-}
 
-function initParticles() {
-  const count = Math.min(WORDS.length * 5, 220);
-  particles = Array.from({length: count}, (_, i) => new Particle(i, count));
-}
-
-let lastTime = 0;
-function loop(ts) {
-  animId = requestAnimationFrame(loop);
-  ctx.clearRect(0, 0, W, H);
-
-  if (sortPhase) {
-    sortProgress = Math.min(sortProgress + 0.012, 1);
-    particles.forEach(p => p.updateSort(sortProgress));
-    if (sortProgress >= 1 && !heroShown) {
-      showHero();
-    }
-  } else {
-    particles.forEach(p => p.updateChaos());
+  // Fade out and show hero
+  if (el > 4600 && !introDone) {
+    introDone = true;
+    let fs = performance.now();
+    (function fade(fts) {
+      const fp = Math.min(1, (fts - fs) / 1400);
+      document.getElementById('intro').style.opacity = 1 - fp;
+      if (fp < 1) requestAnimationFrame(fade);
+      else document.getElementById('intro').style.display = 'none';
+    })(performance.now());
+    setTimeout(() => {
+      ['h1','hsub','hact','scr'].forEach((id, i) =>
+        setTimeout(() => document.getElementById(id).classList.add('show'), i * 160));
+    }, 250);
+    return;
   }
-
-  particles.forEach(p => p.draw());
+  requestAnimationFrame(drawIntro);
 }
+requestAnimationFrame(drawIntro);
 
-let heroShown = false;
-function showHero() {
-  if (heroShown) return;
-  heroShown = true;
-  document.getElementById('hero-text').classList.add('visible');
-  document.getElementById('phase-label').textContent = 'sorted ✓';
-  document.getElementById('phase-dot').style.background = '#c8f557';
-  document.getElementById('phase-dot').style.animation = 'none';
-  document.getElementById('phase-dot').style.opacity = '1';
-}
+// NAV
+window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('sc',scrollY>50));
 
-// ─── TRIGGER SORT ──────────────────────────────────────────
-let sortTriggered = false;
-function triggerSort() {
-  if (sortTriggered) return;
-  sortTriggered = true;
-  sortPhase = true;
-  document.getElementById('phase-bar').classList.add('visible');
-  document.getElementById('scroll-hint').classList.add('hidden');
-}
+// REVEAL
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
-// auto-trigger after 0.8s
-setTimeout(triggerSort, 800);
-
-// also trigger on scroll
-window.addEventListener('scroll', () => {
-  triggerSort();
-}, {once: true});
-
-// ─── INIT ─────────────────────────────────────────────────
-window.addEventListener('resize', () => {
-  resize();
-  if (particles) particles.forEach((p,i) => p.computeTarget(i, particles.length));
-});
-
-resize();
-initParticles();
-loop(0);
-
-// ─── CONVERSATION TYPEWRITER ──────────────────────────────
-const exchanges = document.querySelectorAll('.conv-exchange');
-const heardThis = document.getElementById('heardThis');
-const closingEl = document.querySelector('.closing-inner');
-
-function typeReply(el, text, done) {
-  const replyEl = el.querySelector('.conv-reply');
-  const textEl = el.querySelector('.reply-text');
-  replyEl.classList.add('typing');
-
-  // add cursor
-  const cur = document.createElement('span');
-  cur.className = 'reply-cursor';
-  replyEl.appendChild(cur);
-
-  let i = 0;
-  const speed = 28; // ms per char
-  function tick() {
-    if (i < text.length) {
-      textEl.textContent += text[i++];
-      setTimeout(tick, speed + Math.random() * 18);
-    } else {
-      // remove cursor after a beat
-      setTimeout(() => {
-        cur.remove();
-        if (done) done();
-      }, 900);
-    }
-  }
-  // small pause before typing starts
-  setTimeout(tick, 480);
-}
-
-const convObs = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (!e.isIntersecting) return;
-    const el = e.target;
-    el.classList.add('appeared');
-    const reply = el.dataset.reply;
-    if (reply) {
-      // wait for appear transition, then type
-      setTimeout(() => typeReply(el, reply), 900);
-    }
-    convObs.unobserve(el);
-  });
-}, { threshold: 0.35 });
-
-exchanges.forEach(el => convObs.observe(el));
-
-if (heardThis) {
-  const htObs = new IntersectionObserver(entries => {
-    entries.forEach(e => { if (e.isIntersecting) heardThis.classList.add('visible'); });
-  }, { threshold: 0.4 });
-  htObs.observe(heardThis);
-}
-
-// ─── SPLIT REVEAL — FINAL CTA ─────────────────────────────
-const finalCta = document.getElementById('final-cta');
-if (finalCta) {
-  const splitObs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        // small pause so user sees the seam before it tears
-        setTimeout(() => finalCta.classList.add('revealed'), 180);
-        splitObs.unobserve(finalCta);
-      }
+// FLOATING BUBBLES — staggered pop in when demo section visible
+const fbIds=['fb1','fb2','fb3','fb4','fb5'];
+let fbInit=false;
+new IntersectionObserver(es=>{
+  if(es[0].isIntersecting&&!fbInit){
+    fbInit=true;
+    fbIds.forEach((id,i)=>{
+      setTimeout(()=>{
+        const el=document.getElementById(id);
+        el.classList.add('visible');
+        // gentle float after pop-in
+        let phase=Math.random()*Math.PI*2, dir=i%2===0?1:-1;
+        setTimeout(()=>{
+          el.style.transition='transform 3s ease-in-out';
+          (function fl(){
+            phase+=.008;
+            el.style.transform=`translateY(${Math.sin(phase)*6*dir}px) scale(1)`;
+            requestAnimationFrame(fl);
+          })();
+        },650);
+      }, 500+i*400);
     });
-  }, { threshold: 0.3 });
-  splitObs.observe(finalCta);
+  }
+},{threshold:.3}).observe(document.getElementById('demo'));
+
+// PHONE DEMO
+const scenarios=[
+  {prompt:"I need to file my ITR but I don't know where to start.",
+   reply:"No worries — pulled your Form 16 and AIS. Pre-filled. Refund is ₹18,400. Shall I submit?",
+   action:{lbl:"Action ready",ttl:"ITR Filing — AY 2024-25",det:"Refund: ₹18,400 · Pre-filled · Deadline: 31 July",cta:"Review & submit →"}},
+  {prompt:"I've been meaning to start a SIP for two years.",
+   reply:"Done. ₹3,000/month, Nifty 50 index. Auto-debit on the 5th. First one goes this month.",
+   action:{lbl:"Action taken",ttl:"SIP Started — Nifty 50 Index",det:"₹3,000/month · Auto-debit: 5th",cta:"View SIP details →"}},
+  {prompt:"My credit score dropped and I have no idea why.",
+   reply:"Found it. Auto-pay failed in April — ₹2,300 outstanding. Pay now, score recovers in 45 days.",
+   action:{lbl:"Issue identified & fixed",ttl:"Credit Score: 694 → 748 est.",det:"Missed: ₹2,300 · April · Auto-pay now active",cta:"Pay ₹2,300 now →"}},
+  {prompt:"Should I get term insurance? Keep putting it off.",
+   reply:"Yes. ₹1Cr cover is ₹620/month at your age. One plan leads on claim ratio. Shall I proceed?",
+   action:{lbl:"Recommendation ready",ttl:"Term Cover — ₹1 Crore",det:"₹620/month · 30yr · Claim: 99.1%",cta:"Proceed →"}},
+];
+let curS=-1,dInit=false;
+function clr(){document.getElementById('msgs').innerHTML='';}
+async function loadS(idx,btn){
+  if(curS===idx)return;curS=idx;
+  document.querySelectorAll('.sbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');clr();
+  const s=scenarios[idx];
+  document.getElementById('pi-txt').textContent=s.prompt;
+  await new Promise(r=>setTimeout(r,180));
+  const um=document.createElement('div');um.className='mu';um.innerHTML=`<p>${s.prompt}</p>`;
+  document.getElementById('msgs').appendChild(um);um.scrollIntoView({behavior:'smooth',block:'nearest'});
+  await new Promise(r=>setTimeout(r,480));
+  const ty=document.createElement('div');ty.className='typing';ty.id='ty';ty.innerHTML='<span></span><span></span><span></span>';
+  document.getElementById('msgs').appendChild(ty);ty.scrollIntoView({behavior:'smooth',block:'nearest'});
+  await new Promise(r=>setTimeout(r,1300));
+  document.getElementById('ty')?.remove();
+  const sm=document.createElement('div');sm.className='ms';sm.innerHTML=`<p>${s.reply}</p>`;
+  document.getElementById('msgs').appendChild(sm);sm.scrollIntoView({behavior:'smooth',block:'nearest'});
+  await new Promise(r=>setTimeout(r,400));
+  const am=document.createElement('div');am.className='ma';
+  am.innerHTML=`<div class="a-lbl">${s.action.lbl}</div><div class="a-ttl">${s.action.ttl}</div><div class="a-det">${s.action.det}</div><div class="a-cta">${s.action.cta}</div>`;
+  document.getElementById('msgs').appendChild(am);am.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', e => {
-    const id = a.getAttribute('href');
-    if (id === '#') return;
-    e.preventDefault();
-    document.querySelector(id)?.scrollIntoView({behavior: 'smooth'});
+new IntersectionObserver(es=>{if(es[0].isIntersecting&&!dInit){dInit=true;loadS(0,document.querySelector('.sbtn'));}},{threshold:.2}).observe(document.getElementById('demo'));
+
+// TICKERS — 100+ unique items, no repeats
+const r1=[
+  'ITR filing','Advance tax calculation','TDS refund claimed','Form 16 decoded','Capital gains tax',
+  'HRA exemption','80C optimised','New tax regime vs old','Salary restructuring','TDS on rent',
+  'SIP started','ELSS investment','Nifty 50 index fund','Lump sum deployed','SWP set up',
+  'FD renewed at best rate','RD started','Debt mutual fund','Liquid fund parking','Arbitrage fund',
+  'Term insurance','Health insurance','Critical illness cover','Personal accident cover','Top-up plan',
+  'Policy renewal','Claim filed','Nominee updated','Premium reduced','Coverage reviewed',
+  'Home loan EMI','Loan prepayment','Balance transfer','Top-up loan','Credit card dues',
+  'Personal loan closed','Car loan optimised','Education loan','Overdraft limit','CIBIL corrected',
+  'Credit score fixed','Dispute raised','Hard inquiry removed','Credit limit increased','Card rewards redeemed',
+  'UPI autopay set','Standing instruction','Bank account linked','Zero balance account','Salary account switched'
+];
+const r2=[
+  'PF balance checked','EPF withdrawal','EPF transfer','UAN activated','PF nomination updated',
+  'NPS tier-1 started','NPS tax benefit','Atal Pension Yojana','Gratuity calculated','Leave encashment',
+  'Emergency fund built','3-month buffer set','Liquid corpus created','Insurance-investment split','Net worth tracked',
+  'Portfolio rebalanced','Asset allocation fixed','Gold allocation','International fund','Sectoral fund exit',
+  'GST filing','Advance tax paid','Form 26AS checked','AIS reconciled','Income tax notice replied',
+  'Rent agreement checked','Security deposit tracked','Property tax paid','Home loan statement','NOC obtained',
+  'Salary slip decoded','CTC vs in-hand gap','Variable pay tax','Bonus optimised','ESOP taxation',
+  'Freelance income tax','Rental income declared','Dividend taxation','Interest income declared','Gift tax',
+  'Sukanya Samriddhi','PPF deposit','Senior citizen scheme','Post office MIS','Sovereign gold bond',
+  'RBI floating bond','Treasury bill','Corporate bond','NCDs evaluated','P2P lending risk'
+];
+function buildT(id,items){
+  const el=document.getElementById(id);
+  // Use each item once per track — duplicate the full array once for seamless loop
+  [...items,...items].forEach(t=>{
+    const d=document.createElement('div');d.className='tpill';d.textContent=t;el.appendChild(d);
   });
-});
+}
+buildT('ti1',r1);buildT('ti2',r1);
+buildT('ti3',r2);buildT('ti4',r2);
+
+// CTA SPHERE
+function fibSph(n){const p=[],phi=Math.PI*(3-Math.sqrt(5));for(let i=0;i<n;i++){const y=1-(i/(n-1))*2,r=Math.sqrt(1-y*y),t=phi*i;p.push({sx:Math.cos(t)*r,sy:y,sz:Math.sin(t)*r});}return p;}
+function prj(x,y,z,cx,cy,r,ry,rx){const x1=x*Math.cos(ry)-z*Math.sin(ry),z1=x*Math.sin(ry)+z*Math.cos(ry),y2=y*Math.cos(rx)-z1*Math.sin(rx),z2=y*Math.sin(rx)+z1*Math.cos(rx),f=1/(1-z2*.3);return{px:cx+x1*r*f,py:cy+y2*r*f,d:z2};}
+const ctacv=document.getElementById('cta-cv'),ctax=ctacv.getContext('2d'),ctaP=fibSph(200);
+let ctaRY=0,ctaGo=false;
+function rsC(){const s=document.getElementById('cta');ctacv.width=s.offsetWidth;ctacv.height=s.offsetHeight;}
+function drawCta(){
+  const w=ctacv.width,h=ctacv.height,cx=w/2,cy=h/2,r=Math.min(w,h)*.4;
+  ctax.clearRect(0,0,w,h);ctaRY+=.002;
+  ctaP.forEach(p=>{const{px,py,d}=prj(p.sx,p.sy,p.sz,cx,cy,r,ctaRY,.2);const dep=(d+1)/2;ctax.beginPath();ctax.arc(px,py,.5+dep*1.4,0,Math.PI*2);ctax.fillStyle=`rgba(200,245,87,${.025+dep*.13})`;ctax.fill();});
+  ctax.strokeStyle='rgba(200,245,87,0.04)';ctax.lineWidth=.4;
+  ctax.beginPath();for(let i=0;i<=80;i++){const a=(i/80)*Math.PI*2;const{px,py}=prj(Math.cos(a),0,Math.sin(a),cx,cy,r,ctaRY,.2);i===0?ctax.moveTo(px,py):ctax.lineTo(px,py);}ctax.stroke();
+  requestAnimationFrame(drawCta);
+}
+new IntersectionObserver(es=>{if(es[0].isIntersecting&&!ctaGo){ctaGo=true;rsC();drawCta();}},{threshold:.1}).observe(document.getElementById('cta'));
+window.addEventListener('resize',()=>{if(ctaGo)rsC();});
+
+function sh(e){e.preventDefault();const v=document.getElementById('he').value;if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v))return false;const b=e.target.querySelector('button');b.textContent="You're in ✦";b.style.background='#155a15';document.getElementById('he').disabled=true;b.disabled=true;return false;}
+function sc(e){e.preventDefault();const v=document.getElementById('ce').value;const err=document.getElementById('cerr');if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){err.style.display='block';return false;}err.style.display='none';document.getElementById('cf').style.display='none';document.getElementById('cok').style.display='block';return false;}
 </script>
 </body>
 </html>
