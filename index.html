@@ -479,7 +479,7 @@ function sendWaitlist(email, pain, btnEl, successId, formId){
   var params={email:email, pain:pain||'Not specified'};
   btnEl.textContent='Sending…';
   btnEl.disabled=true;
-  emailjs.send('service_2mvxk5d','template_5jwsvr8',params)
+  emailjs.send('service_2mvxk5d','template_0hebssm',params)
     .then(function(){
       if(formId)document.getElementById(formId).style.display='none';
       if(successId)document.getElementById(successId).style.display='block';
