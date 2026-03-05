@@ -38,9 +38,9 @@ nav.on-why{background:rgba(244,241,234,.96);backdrop-filter:blur(20px);border-bo
 .nav-links a:hover{color:var(--ink);}
 .nav-cta{background:var(--forest)!important;color:#fff!important;padding:.48rem 1.2rem!important;border-radius:100px;font-weight:600!important;}
 .nav-cta:hover{background:var(--forest2)!important;}
-.nav-back{display:none;font-size:.8rem;font-weight:600;color:var(--forest);text-decoration:none;cursor:none;background:rgba(26,51,32,.08);padding:.42rem 1rem .42rem .8rem;border-radius:100px;border:1px solid rgba(26,51,32,.15);transition:all .2s;}
-.nav-back::before{content:'\2190  ';font-size:.75rem;}
-.nav-back:hover{background:rgba(26,51,32,.14);color:var(--forest);}
+
+
+
 
 /* ═══════════════════════════════════
    PAGE: HOME
@@ -149,11 +149,11 @@ footer{background:#122a18;border-top:1px solid rgba(200,245,87,.07);padding:1.6r
 .foot-note{font-size:.65rem;color:rgba(180,220,150,.25);letter-spacing:.04em;}
 
 /* SCROLL HINT */
-#scroll-hint{position:fixed;right:1.6rem;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;opacity:0;transition:opacity .6s;pointer-events:none;z-index:100;}
+#scroll-hint{position:absolute;bottom:2.2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;opacity:0;transition:opacity .6s;pointer-events:none;z-index:100;}
 #scroll-hint.vis{opacity:1;}
-.sh-line{width:1px;height:48px;background:linear-gradient(to bottom,rgba(200,245,87,.0),rgba(200,245,87,.5));animation:shpulse 1.6s ease-in-out infinite;}
-.sh-dot{width:4px;height:4px;border-radius:50%;background:rgba(200,245,87,.5);animation:shpulse 1.6s ease-in-out infinite;}
-.sh-txt{font-size:.48rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(200,245,87,.4);writing-mode:vertical-rl;}
+.sh-line{width:1px;height:40px;background:linear-gradient(to bottom,rgba(200,245,87,.0),rgba(200,245,87,.6));animation:shpulse 1.6s ease-in-out infinite;}
+.sh-dot{width:5px;height:5px;border-radius:50%;background:rgba(200,245,87,.6);animation:shpulse 1.6s ease-in-out infinite;}
+.sh-txt{font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(200,245,87,.5);margin-bottom:.3rem;}
 @keyframes shpulse{0%,100%{opacity:.3}50%{opacity:1}}
 
 /* REVEAL */
@@ -239,7 +239,7 @@ footer{background:#122a18;border-top:1px solid rgba(200,245,87,.07);padding:1.6r
   .nav-links a:not(.nav-cta){display:none;}
   .nav-cta{font-size:.75rem!important;padding:.4rem 1rem!important;}
   #nav-why-links{display:flex!important;}
-  #nav-why-links .nav-back{display:flex;}
+  
   .shift-sticky{padding:5rem 0;}
   .shift-stage{padding:0 1.4rem;}
   .sline{font-size:clamp(1.8rem,7vw,3rem);padding:1rem 0;}
@@ -291,8 +291,7 @@ footer{background:#122a18;border-top:1px solid rgba(200,245,87,.07);padding:1.6r
 <body>
 <div id="cur"></div><div id="ring"></div>
 <div id="intro"><canvas id="ic"></canvas></div>
-<a id="why-back-pill" href="#" onclick="showPage('home');return false;">←  Back to home</a>
-<div id="scroll-hint"><div class="sh-line"></div><div class="sh-dot"></div><div class="sh-txt">scroll</div></div>
+<a id="why-back-pill"  href="#" onclick="showPage('home');return false;">←  Back to home</a>
 
 <nav id="nav">
   <a class="logo" href="#" onclick="showPage('home');return false;">sorted.</a>
@@ -300,9 +299,7 @@ footer{background:#122a18;border-top:1px solid rgba(200,245,87,.07);padding:1.6r
     <a href="#" onclick="showPage('why');return false;">The idea behind Sorted</a>
     <a href="#cta" class="nav-cta">Join waitlist</a>
   </div>
-  <div class="nav-links" id="nav-why-links" style="display:none;">
-    <a class="nav-back" href="#" onclick="showPage('home');return false;">Back home</a>
-  </div>
+
 </nav>
 
 <!-- ═══ HOME PAGE ═══ -->
@@ -316,6 +313,7 @@ footer{background:#122a18;border-top:1px solid rgba(200,245,87,.07);padding:1.6r
         <p class="sline sl3" id="sl3"><em>Sorted</em> does the work.</p>
       </div>
     </div>
+  <div id="scroll-hint"><div class="sh-txt">scroll</div><div class="sh-line"></div><div class="sh-dot"></div></div>
   </section>
 
   <section id="demo">
@@ -497,7 +495,7 @@ function showPage(page){
   document.getElementById('page-home').style.display=page==='home'?'block':'none';
   document.getElementById('page-why').style.display=page==='why'?'block':'none';
   document.getElementById('nav-home-links').style.display=page==='home'?'flex':'none';
-  document.getElementById('nav-why-links').style.display=page==='why'?'flex':'none';
+  
   document.getElementById('nav').className=page==='why'?'on-why':'';
   document.getElementById('why-back-pill').classList.toggle('vis',page==='why');
   window.scrollTo(0,0);
@@ -510,15 +508,13 @@ function showPage(page){
     },50);
   }
   /* update URL hash */
-  history.pushState(null,'',page==='why'?'#why':'#');
+  try{history.pushState(null,'',page==='why'?'#why':'#');}catch(e){}
   document.title=page==='why'?'The idea behind Sorted':'Sorted \u2014 Your money, handled.';
 }
 /* handle browser back/forward */
-window.addEventListener('popstate',function(){
-  showPage(location.hash==='#why'?'why':'home');
-});
+try{window.addEventListener('popstate',function(){showPage(location.hash==='#why'?'why':'home');});}catch(e){}
 /* initial load */
-if(location.hash==='#why')showPage('why');
+try{if(location.hash==='#why')showPage('why');}catch(e){}
 
 /* ── INTRO ANIMATION */
 var ic=document.getElementById('ic'),ctx=ic.getContext('2d');
