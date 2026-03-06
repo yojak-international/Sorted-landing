@@ -134,7 +134,7 @@ nav.on-why{background:rgba(244,241,234,.96);backdrop-filter:blur(20px);border-bo
 .bbc-ttl{font-family:'Instrument Serif',serif;font-size:.88rem;color:var(--forest);margin-bottom:.28rem;line-height:1.3;}
 .bbc-cta{font-size:.6rem;color:var(--forest);letter-spacing:.03em;border-top:1px solid rgba(26,51,32,.08);padding-top:.3rem;}
 .bbch{align-self:flex-start;background:var(--forest);color:var(--lime);border-radius:100px;padding:.42rem 1rem .42rem .85rem;font-size:.68rem;letter-spacing:.02em;box-shadow:0 4px 20px rgba(26,51,32,.25);white-space:nowrap;display:inline-flex;align-items:center;gap:.42rem;}
-.bbch::before{content:'\2713';font-size:.6rem;opacity:.8;}
+.bbch::before{content:'✓';font-size:.6rem;opacity:.8;}
 
 /* CTA */
 #cta{background:var(--forest);border-top:1px solid rgba(200,245,87,.07);padding:8rem 2rem;text-align:center;position:relative;overflow:hidden;}
@@ -247,9 +247,9 @@ footer{background:#122a18;border-top:1px solid rgba(200,245,87,.07);padding:1.6r
   #cur,#ring{display:none;}
   body{cursor:auto;}
   a,button,input,select,#why-back-pill{cursor:pointer;}
-  nav{padding:.9rem 1.4rem;}
+  nav{padding:.75rem 1rem;}
   .logo{font-size:1.4rem;}
-  .nav-links a:not(.nav-cta){display:none;}
+  .nav-links a:not(.nav-cta){font-size:.68rem;letter-spacing:-.01em;white-space:nowrap;}
   .nav-cta{font-size:.75rem!important;padding:.4rem 1rem!important;}
   #nav-why-links{display:flex!important;}
   
@@ -304,7 +304,7 @@ footer{background:#122a18;border-top:1px solid rgba(200,245,87,.07);padding:1.6r
 <body>
 <div id="cur"></div><div id="ring"></div>
 <div id="intro"><canvas id="ic"></canvas></div>
-<a id="why-back-pill"  href="#" onclick="showPage('home');return false;">←  Back to home</a>
+<a id="why-back-pill"  href="#" onclick="showPage('home');return false;">← Back to home</a>
 
 <nav id="nav">
   <a class="logo" href="#" onclick="showPage('home');return false;">sorted.</a>
@@ -323,7 +323,7 @@ footer{background:#122a18;border-top:1px solid rgba(200,245,87,.07);padding:1.6r
       <div class="shift-stage">
         <p class="sline sl1" id="sl1">Most <span class="sq">&ldquo;Personal Finance&rdquo;</span> apps just show you dashboards.</p>
         <p class="sline sl2" id="sl2">We think that&rsquo;s lazy.</p>
-        <p class="sline sl3" id="sl3"><em>Sorted</em> does the work.</p>
+        <p class="sline sl3" id="sl3"><em>Sorted</em> gets it done.</p>
       </div>
     </div>
   <div id="scroll-hint"><div class="sh-txt">scroll</div><div class="sh-line"></div><div class="sh-dot"></div></div>
@@ -333,7 +333,7 @@ footer{background:#122a18;border-top:1px solid rgba(200,245,87,.07);padding:1.6r
     <div class="demo-inner">
       <div class="demo-left rv">
         <div class="demo-tag">&mdash; A conversation that ends in action</div>
-        <h2 class="demo-h">This is what using<br><em>Sorted feels like.</em></h2>
+        <h2 class="demo-h">This is what a sorted<br><em>financial life feels like.</em></h2>
         <div class="demo-tasks" id="dtasks"></div>
         <p class="demo-more">and many more&hellip;</p>
         <div class="demo-dots" id="ddots"></div>
@@ -341,23 +341,23 @@ footer{background:#122a18;border-top:1px solid rgba(200,245,87,.07);padding:1.6r
       <div class="demo-right rv">
         <div class="pwrap" id="pwrap">
           <div class="pframe">
-            <div class="pnotch"></div>
-            <div class="pscreen">
-              <div class="phdr">
-                <div class="phdr-dot"></div>
-                <div class="phdr-name">sorted.</div>
-                <div class="phdr-status">online</div>
-              </div>
-              <div class="pghost-area" id="pghost"></div>
-              <div class="ptyp off" id="ptyp"><div class="typd"><span></span><span></span><span></span></div></div>
-              <div class="pinp">
-                <div class="pinp-txt" id="ptxt">Ask anything about your money&hellip;</div>
-                <div class="pinp-btn">&uarr;</div>
-              </div>
+          <div class="pnotch"></div>
+          <div class="pscreen">
+            <div class="phdr">
+              <div class="phdr-dot"></div>
+              <div class="phdr-name">sorted.</div>
+              <div class="phdr-status">online</div>
+            </div>
+            <div class="pghost-area" id="pghost"></div>
+            <div class="ptyp off" id="ptyp"><div class="typd"><span></span><span></span><span></span></div></div>
+            <div class="pinp">
+              <div class="pinp-txt" id="ptxt">Ask anything about your money&hellip;</div>
+              <div class="pinp-btn">&uarr;</div>
             </div>
           </div>
-          <div class="btrack" id="btrack"></div>
         </div>
+        <div class="btrack" id="btrack"></div>
+      </div></div>
       </div>
     </div>
   </section>
@@ -535,14 +535,18 @@ function rsz(){ic.width=window.innerWidth;ic.height=window.innerHeight;}
 rsz();window.addEventListener('resize',function(){rsz();pts=null;});
 
 var PHRASES=[
-  'file my ITR','start a SIP','check my credit score','renew my insurance',
-  'sort out my PF','calculate my taxes','review my FD','set up a SIP',
-  'fix my credit','get term cover','track my spending','submit Form 16',
-  'claim HRA','invest my bonus','sort my loans','check my portfolio',
-  'update my nominee','pay advance tax','open an NPS account','review my SIPs',
-  'file my ITR','start a SIP','check my credit score','renew my insurance',
-  'sort out my PF','get term cover','track my spending','fix my credit',
-  'calculate my taxes','invest my bonus','sort my loans','check my portfolio'
+  'file my ITR','₹18,400 refund','start a SIP','CIBIL: 694',
+  'check my credit score','₹3,000/mo','renew my insurance','Form 16',
+  'sort out my PF','NAV: 42.18','calculate my taxes','review my FD',
+  'set up a SIP','₹1Cr cover','fix my credit','get term cover',
+  'track my spending','submit Form 16','Section 80C','claim HRA',
+  'invest my bonus','sort my loans','₹2,300 due','check my portfolio',
+  'update my nominee','pay advance tax','EPF: ₹1.2L','open an NPS account',
+  'review my SIPs','AY 2024-25','file my ITR','₹18,400 refund',
+  'start a SIP','CIBIL: 694','check my credit score','₹3,000/mo',
+  'renew my insurance','Form 16','sort out my PF','NAV: 42.18',
+  'calculate my taxes','review my FD','set up a SIP','₹1Cr cover',
+  'fix my credit','get term cover','track my spending','EPF: ₹1.2L'
 ];
 var pts=null;
 function build(){
@@ -564,7 +568,7 @@ function frame(ts){
   if(!pts)pts=build();
   var el=ts-t0,W=ic.width,H=ic.height;
   ctx.fillStyle='#f4f1ea';ctx.fillRect(0,0,W,H);
-  var sp=eO(Math.max(0,(el-1200)/3000));
+  var sp=eO(Math.max(0,(el-2800)/3400));
   pts.grid.forEach(function(p){
     p.x+=(p.tx-p.x)*sp*.07+(sp<.02?p.vx:0);
     p.y+=(p.ty-p.y)*sp*.07+(sp<.02?p.vy:0);
@@ -572,8 +576,10 @@ function frame(ts){
     p.rot*=sp>.06?.86:1;
     var alpha=Math.min(1,el/500)*(p.a+sp*(.52-p.a));
     ctx.save();ctx.globalAlpha=alpha;ctx.translate(p.x,p.y);ctx.rotate(p.rot*(1-sp));
-    ctx.font=(sp>.72?'500 ':'400 ')+p.sz+'px DM Sans,sans-serif';
-    ctx.fillStyle=sp>.72?'#1a3320':'#3a5040';
+    var isMono=p.word.match(/^[₹0-9:.\/]/);
+    ctx.font=(sp>.72?'500 ':'400 ')+p.sz+'px '+(isMono&&sp<.5?'monospace':'DM Sans,sans-serif');
+    var matrixGreen=isMono&&sp<.4;
+    ctx.fillStyle=sp>.72?'#1a3320':(matrixGreen?'rgba(80,180,80,'+(alpha*1.8)+')':'#3a5040');
     ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(p.word,0,0);ctx.restore();
   });
   if(sp>.72){
@@ -582,14 +588,14 @@ function frame(ts){
     for(var c=0;c<=C2;c++){ctx.beginPath();ctx.moveTo(c*CW2,0);ctx.lineTo(c*CW2,H);ctx.stroke();}
     for(var r=0;r<=R2;r++){ctx.beginPath();ctx.moveTo(0,r*RH2);ctx.lineTo(W,r*RH2);ctx.stroke();}
   }
-  if(el>5200){
+  if(el>7000){
     var ha=eO((el-5200)/600),sz=Math.min(W*.088,88);
     ctx.save();ctx.globalAlpha=ha*.86;ctx.fillStyle='#f4f1ea';ctx.fillRect(W*.04,H*.5-sz*1.6,W*.92,sz*3.4);ctx.restore();
     ctx.save();ctx.globalAlpha=ha;ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.font='normal '+sz+'px Instrument Serif,Times New Roman,serif';ctx.fillStyle='#1a3320';ctx.fillText('Your money,',W/2,H/2-sz*.58);
     ctx.font='italic '+(sz*1.1)+'px Instrument Serif,Times New Roman,serif';ctx.fillText('Sorted.',W/2,H/2+sz*.56);ctx.restore();
   }
-  if(el>6800&&!introDone){
+  if(el>8800&&!introDone){
     introDone=true;
     var introEl=document.getElementById('intro'),fs=performance.now();
     (function fo(t){var p=Math.min(1,(t-fs)/1200);introEl.style.opacity=1-p;if(p<1)requestAnimationFrame(fo);else{introEl.style.display='none';document.body.classList.add('ready');playShift();}})(performance.now());
@@ -622,30 +628,30 @@ var wro=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isInte
 
 /* ── DEMO */
 var TASKS=[
-  {lbl:'File my ITR',hint:'I need to file my ITR\u2026',seq:[
-    {t:'u',txt:'I need to file my ITR but I don\u2019t know where to start.'},
-    {t:'a',txt:'No worries \u2014 pulled your Form 16 and AIS. Pre-filled.'},
-    {t:'a',txt:'Refund is \u20b918,400. Shall I submit?'},
-    {t:'c',ttl:'ITR Filing \u2014 AY\u00a02024\u201325',cta:'Review & submit \u2192'},
-    {t:'p',txt:'ITR filed \u00b7 \u20b918,400 refund incoming'},
+  {lbl:'File my ITR',hint:'I need to file my ITR…',seq:[
+    {t:'u',txt:'I need to file my ITR but I don’t know where to start.'},
+    {t:'a',txt:'No worries — pulled your Form 16 and AIS. Pre-filled.'},
+    {t:'a',txt:'Refund is ₹18,400. Shall I submit?'},
+    {t:'c',ttl:'ITR Filing — AY 2024–25',cta:'Review & submit →'},
+    {t:'p',txt:'ITR filed · ₹18,400 refund incoming'},
   ]},
-  {lbl:'Start a SIP',hint:'\u20b910k/month \u2014 where should it go?',seq:[
-    {t:'u',txt:'I have \u20b910k/month spare. What should I do?'},
-    {t:'a',txt:'Mapped your goals and risk. Here\u2019s the plan.'},
-    {t:'c',ttl:'SIP \u2014 Nifty\u00a050 Index Fund',cta:'Start \u20b93,000/mo \u2192'},
-    {t:'p',txt:'SIP started \u00b7 auto-debit 5th every month'},
+  {lbl:'Start a SIP',hint:'₹10k/month — where should it go?',seq:[
+    {t:'u',txt:'I have ₹10k/month spare. What should I do?'},
+    {t:'a',txt:'Mapped your goals and risk. Here’s the plan.'},
+    {t:'c',ttl:'SIP — Nifty 50 Index Fund',cta:'Start ₹3,000/mo →'},
+    {t:'p',txt:'SIP started · auto-debit 5th every month'},
   ]},
   {lbl:'Fix my credit score',hint:'My score is stuck. Help?',seq:[
     {t:'u',txt:'My credit score is stuck at 694. Can you help?'},
-    {t:'a',txt:'Found it \u2014 auto-pay failed in April. \u20b92,300 outstanding.'},
-    {t:'c',ttl:'Credit Score: 694 \u2192 748 est.',cta:'Pay \u20b92,300 now \u2192'},
-    {t:'p',txt:'Score recovering \u00b7 45 days to bounce back'},
+    {t:'a',txt:'Found it — auto-pay failed in April. ₹2,300 outstanding.'},
+    {t:'c',ttl:'Credit Score: 694 → 748 est.',cta:'Pay ₹2,300 now →'},
+    {t:'p',txt:'Score recovering · 45 days to bounce back'},
   ]},
   {lbl:'Get term insurance',hint:'Help me get term cover.',seq:[
     {t:'u',txt:'Help me get term cover. Keep putting it off.'},
-    {t:'a',txt:'\u20b91Cr cover at your age is \u20b9620/mo. Compared three plans.'},
-    {t:'c',ttl:'Term Cover \u2014 \u20b91\u00a0Crore',cta:'Lock this plan \u2192'},
-    {t:'p',txt:'Term locked \u00b7 \u20b9620/mo \u00b7 99.1% claim ratio'},
+    {t:'a',txt:'₹1Cr cover at your age is ₹620/mo. Compared three plans.'},
+    {t:'c',ttl:'Term Cover — ₹1 Crore',cta:'Lock this plan →'},
+    {t:'p',txt:'Term locked · ₹620/mo · 99.1% claim ratio'},
   ]},
 ];
 var curT=-1,tmrs=[],autoT=null;
@@ -681,14 +687,14 @@ function addGhost(s){
   if(s.t==='c'||s.t==='p')return;
   var pi=document.getElementById('pghost');while(pi.children.length>=3)pi.children[0].remove();
   var g=document.createElement('div');g.className='pghost '+(s.t==='u'?'gu':'ga');
-  g.innerHTML='<p>'+(s.txt.length>32?s.txt.slice(0,32)+'\u2026':s.txt)+'</p>';
+  g.innerHTML='<p>'+(s.txt.length>32?s.txt.slice(0,32)+'…':s.txt)+'</p>';
   pi.appendChild(g);requestAnimationFrame(function(){requestAnimationFrame(function(){g.classList.add('vis');});});
 }
 (function(){
   var tl=document.getElementById('dtasks'),dl=document.getElementById('ddots');
   TASKS.forEach(function(t,i){
     var b=document.createElement('button');b.className='dtask';
-    b.innerHTML=t.lbl+'<span class="dtask-arr">\u2192</span>';
+    b.innerHTML=t.lbl+'<span class="dtask-arr">→</span>';
     b.onclick=function(){swTask(i,true);};tl.appendChild(b);curHover(b);
     var d=document.createElement('div');d.className='ddot';dl.appendChild(d);
   });
